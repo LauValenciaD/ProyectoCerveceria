@@ -1,9 +1,9 @@
 <?php
 session_start();
-$user = $_SESSION['user'];
-if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inicio
+//$user = $_SESSION['user'];
+/* if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inicio
     header("Location: index.php");
-}
+} */
 // Recuperar las variables de sesión
 $denominacion = $_SESSION["denominacion"] ?? '';
 $marca = $_SESSION["marca"] ?? '';
@@ -19,36 +19,19 @@ $observaciones = $_SESSION["observaciones"] ?? '';
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css" />
-    <title>Procesado</title>
+       <meta charset="UTF-8" />
+        <link rel="shortcut icon" type="image/x-icon" href="assets/img/beer-logo.png" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="assets/css/bootstrap.css" />
+        <link rel="stylesheet" href="assets/css/style.css" />
+        <link rel="stylesheet" href="assets/css/fontawesome.min.css" />
+        <!-- Hecho por Laura Valencia Díaz -->
+        <title>Cervecería - Laura Valencia</title>
 </head>
 
 <body>
     <?php
-    echo "<h1> Inserción de Cervezas </h1>";
-    if (isset($_REQUEST["embase"]) && isset($_REQUEST["marca"]) && isset($_REQUEST["advertencia"]) && isset($_REQUEST["fecha"]) && isset($_REQUEST["alergenos"])) {
-        $cerveza = $_REQUEST["cerveza"];
-        $nombre = $_REQUEST["denominacion"];
-        $embase = $_POST["embase"];
-        $cantidad = $_REQUEST["cantidad"];
-        $marca = $_REQUEST["marca"];
-        $advertencia = $_REQUEST["advertencia"];
-        $fecha = $_REQUEST["fecha"];
-        $observaciones = $_REQUEST["observaciones"];
-
-
-
-
-        // Mostrar los valores seleccionados
-        echo "Nombre: $cerveza <br> Denominación: $nombre <br> Embase: $embase <br> Cantidad: $cantidad <br> Marca: $marca <br>";
-        echo "Has seleccionado los siguientes alérgenos:<br>";
-        foreach ($opcionesSeleccionadas as $opcion) {
-            echo htmlspecialchars($opcion) . "<br>";
-        }
-        echo "Advertencia: $advertencia <br> Fecha: $fecha <br> Observaciones: $observaciones <br>";
-        comprobarImg2();
+       
 
 
 
@@ -125,7 +108,7 @@ $observaciones = $_SESSION["observaciones"] ?? '';
                 }
             }
         }
-    }
+    
     ?>
     <header>
         <nav class="navbar navbar-expand-lg navbar-light shadow d-flex justify-content-center">
@@ -182,6 +165,37 @@ $observaciones = $_SESSION["observaciones"] ?? '';
             </div>
         </nav>
     </header>
+    <main>
+        <section>
+                <div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+            <h1 class="mb-0">Detalles de la Cerveza</h1>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Denominación:</strong> <?= $denominacion ?></li>
+                <li class="list-group-item"><strong>Marca:</strong> <?= $marca ?></li>
+                <li class="list-group-item"><strong>Tipo:</strong> <?= $tipo ?></li>
+                <li class="list-group-item"><strong>Formato:</strong> <?= $formato ?></li>
+                <li class="list-group-item"><strong>Cantidad:</strong> <?= $cantidad ?></li>
+                <li class="list-group-item"><strong>Alérgenos:</strong> 
+                    <?= !empty($alergenos) ? implode(", ", $alergenos) : "Sin alérgenos" ?>
+                </li>
+                <li class="list-group-item"><strong>Fecha de consumo preferente:</strong> <?= $fecha ?></li>
+                <li class="list-group-item"><strong>Precio:</strong> <?= $precio ?> €</li>
+                <li class="list-group-item"><strong>Observaciones:</strong> 
+                    <?= $observaciones ?? "Sin observaciones" ?>
+                </li>
+            </ul>
+        </div>
+        <div class="card-footer text-center">
+            <a href="insertar.php" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+        </section>
+    </main>
     <footer class="py-3 my-4 border-top">
         <ul class="nav justify-content-center pb-3 mb-3">
             <li class="nav-item">

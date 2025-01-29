@@ -1,9 +1,9 @@
 <?php
 session_start();
 $user = $_SESSION['user'];
-if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inicio
+/* if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inicio
     header("Location: index.php");
-}
+} */
 ?>
 <!DOCTYPE html>
 <html lang="es">
