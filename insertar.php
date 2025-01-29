@@ -1,9 +1,10 @@
 <?php
 session_start();
 $user = $_SESSION['user'];
-/* if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inicio
-    header("Location: index.php");
-} */
+if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inicio
+    alert("Debes ser root para estar en esta página.");
+  header("Location: index.php");
+  } 
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -39,6 +40,8 @@ $user = $_SESSION['user'];
 
             $errores = false;
             $precioMal = false;
+            $mensaje = "";
+            $errorFoto = false;
 
             // Validaciones
             if (empty($denominacion)) {
@@ -73,6 +76,18 @@ $user = $_SESSION['user'];
                 $precioMal = true;
                 $errores = true;
             }
+            if (isset($_FILES["foto"]) && $_FILES["foto"]["error"] === UPLOAD_ERR_OK) {
+                // Si se ha subido una foto correctamente
+                $rutaFoto = comprobarImg($mensaje);
+                if ($mensaje != "") {
+                    $errores = true;
+                    $errorFoto = true;
+                }
+            } elseif (!isset($_FILES["foto"]) || $_FILES["foto"]["error"] !== UPLOAD_ERR_OK) {
+                // Si no se ha subido ninguna foto o hubo un error en la subida
+                $rutaFoto = "";
+            }
+
 
             // Si no hay errores, procesa e inserta la cerveza
             if (!$errores) {
@@ -85,10 +100,41 @@ $user = $_SESSION['user'];
                 $_SESSION["fecha"] = $fecha;
                 $_SESSION["precio"] = $precio;
                 $_SESSION["observaciones"] = $observaciones;
-
+                $_SESSION["rutaFoto"] = $rutaFoto;
 
                 header("Location: procesar.php");
                 exit;
+            }
+        }
+
+        function comprobarImg(&$mensaje) {
+            // Verificar si hay errores en la subida del archivo
+            $errors = $_FILES['foto']['error'];
+            $mensaje = "";
+            if ($errors !== UPLOAD_ERR_OK) {
+                $mensaje = "<div class='text-danger'><strong> Hay un error en la imagen. </strong> El error es $errors .</div>";
+            } else { // Obtener información del archivo
+                $nombre = $_FILES['foto']['name'];
+                $tamanio = $_FILES['foto']['size'];
+                $tipo = $_FILES['foto']['type'];
+                $origen = $_FILES['foto']['tmp_name'];
+
+                if ($tamanio > 1000000) { // Verificar tamaño
+                    $mensaje = "<div class='text-danger'>La imagen es demasiado grande. Máximo 1 MB.</div>";
+                }
+                if ($tipo !== "image/jpeg" && $tipo !== "image/png") { // Verificar tipo de archivo
+                    $mensaje = "<div class='text-danger'>La imagen debe ser jpg o png. Tipo de archivo: $tipo </div>";
+                } else {
+
+                    $destino = "archivos/" . $nombre;  // Ruta relativa a la carpeta "archivos"
+                    // Mover el archivo a la ruta de destino
+                    if (move_uploaded_file($origen, $destino)) {
+
+                        return $destino; //devolvemos la ruta
+                    } else {
+                        $mensaje = "<div class='text-danger'>Error al mover el archivo a la carpeta de destino.</div>";
+                    }
+                }
             }
         }
         ?>
@@ -115,6 +161,12 @@ $user = $_SESSION['user'];
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link nav-title" href="#">CATÁLOGO</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-title" href="#">INSERTAR</a>
+                                </li>  
+                                <li class="nav-item">
+                                    <a class="nav-link nav-title" href="#">CERRAR SESIÓN</a>
                                 </li>
                             </ul>
                         </div>
@@ -325,12 +377,18 @@ $user = $_SESSION['user'];
                                                 <input type="file" name="foto" id="foto" class="form-control">
                                             </div>
                                         </div>
+                                        <?php
+                                        if (isset($_POST["submit"]) && $errorFoto) {
+                                            echo $mensaje;
+                                        }
+                                        ?>
 
                                         <!-- precio -->
                                         <div class="mb-3 row">
                                             <label for="precio" class="col-sm-4 col-form-label fw-bold">Precio:</label>
                                             <div class="col-sm-7 d-flex flex-nowrap gap-2 align-items-center">
-                                                <input type="number" name="precio" id="precio" class="form-control">
+                                                <!--sería más correcto usar type=number pero se ha hecho así para poner un validador de números-->
+                                                <input type="text" name="precio" id="precio" class="form-control">
                                                 <span>€</span>
                                             </div>
                                         </div>

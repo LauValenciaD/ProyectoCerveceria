@@ -14,6 +14,7 @@
 
     <body>
         <?php
+        require_once "conexion.php";
 
         //VERIFICAR QUE EL NETBEANS TENGA LA URL DEL PROYECTO CORRECTA PARA QUE FUNCIONE Y QUE EL PUERTO DE LA BD ESTE BIEN
         function comprobarNombre($dato) {
@@ -31,18 +32,24 @@
             $user = comprobarNombre($_POST["user"]);
             $password = $_POST["clave"];
             $errores = array();
+            $mensaje = "";
+           
 
-            if (empty($user) || empty($password)) {
-                array_push($errores, "Faltan datos.");
+            if (empty($user)) {
+               $mensaje = "<div class= 'text-danger'>El correo está vacío</div>";
+               array_push($errores, $mensaje);
+               
+               
+            }
+            if (empty($password)) {
+               $mensaje = "<div class= 'text-danger'>La contraseña está vacía</div>";
+               array_push($errores, $mensaje);
+               
             }
 
             //PONER MENSAJE DE ERROR SI HAY CARACTERES RAROS?
 
-            if (count($errores) > 0) { // Si hay errores, los imprime
-                foreach ($errores as $error) {
-                    echo "<div style='background-color: red; color: white;'>$error</div>";
-                }
-            } else {
+            if (count($errores) == 0) {
                 // Conexión a la base de datos
                 require_once "conexion.php";
                 $sql = "SELECT * FROM usuario WHERE correo = ?";
@@ -56,15 +63,11 @@
                     if (password_verify($password, $registrado["password"])) {
                         session_start();
                         $_SESSION["user"] = $user;
-                        if ($user == "root") {
-                            header("Location: admin_dashboard.php");
-                            exit();
-                        } else {
-                            header("Location: dashboard.php");
+                            header("Location: catalogo.php");
                             exit();
                         }
                     } else {
-                        echo "<div style='background-color: red; color: white;'>La contraseña no coincide</div>";
+                        $mensaje = "<div class= 'text-danger'>Usuario no registrado</div>";
                     }
                     //CODIGO PARA REGISTRAR USUARIOS CON CLAVE CIFRADA
 //                } else { // Si el usuario NO está registrado
@@ -81,7 +84,7 @@
 //                    }
                 }
             }
-        }
+        
         ?>
         <header>
             <nav class="navbar navbar-expand-lg navbar-light shadow d-flex justify-content-center">
@@ -102,10 +105,10 @@
                         <div class="flex-fill">
                             <ul class="nav navbar-nav mx-lg-auto d-flex justify-content-center">
                                 <li class="nav-item">
-                                    <a class="nav-link nav-title" href="index.html">HOME</a>
+                                    <a class="nav-link nav-title" href="index.php">HOME</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link nav-title" href="#">CATÁLOGO</a>
+                                    <a class="nav-link nav-title" href="#" onclick="alert('Inicia sesión para acceder al catálogo.')">CATÁLOGO</a>
                                 </li>
                             </ul>
                         </div>
@@ -150,9 +153,9 @@
                             <form action="index.php" method="post">
                                 <!-- Email -->
                                 <div data-mdb-input-init class="form-outline mb-4">
-                                    <input type="email" name="user" id="user" class="form-control form-control-lg"
+                                    <input type="text" name="user" id="user" class="form-control form-control-lg"
                                            placeholder="Introduce tu email..." />
-                                    <label class="form-label" for="form3Example3">Email</label>
+                                    <label class="form-label" for="user">Email</label>
                                 </div>
 
                                 <!-- Password-->
@@ -173,6 +176,13 @@
                                         <strong>root</strong>.
                                     </p>
                                 </div>
+                                <?php
+                                        if (isset($_POST["submit"]) && count($errores) > 0) {
+                                            foreach ($errores as $mensaje) {
+                                            echo $mensaje;
+                                            }
+                                        }
+                                        ?>
 
                                 <div class="text-center text-lg-start mt-4 pt-2">
                                     <input type="submit" data-mdb-button-init data-mdb-ripple-init
@@ -188,7 +198,7 @@
             </section>
 
         </main>
-        <footer class="py-3 my-4 border-top">
+        <footer class="py-3 my-4 mt-4 border-top">
             <ul class="nav justify-content-center pb-3 mb-3">
                 <li class="nav-item">
                     <a href="#" class="nav-link px-2 text-body-secondary">Inicio</a>
