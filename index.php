@@ -52,7 +52,7 @@
             if (count($errores) == 0) {
                 // Conexión a la base de datos
                 require_once "conexion.php";
-                $sql = "SELECT * FROM usuario WHERE correo = ?";
+                $sql = "SELECT * FROM usuario WHERE CORREO = ?";
                 $sentencia = mysqli_prepare($con, $sql);
                 mysqli_stmt_bind_param($sentencia, "s", $user);
                 mysqli_stmt_execute($sentencia);
@@ -60,7 +60,7 @@
                 $registrado = mysqli_fetch_assoc($result); //devuelve false si no encuentra el usuario
 
                 if ($registrado) { // Si el usuario ya está registrado
-                    if (password_verify($password, $registrado["password"])) {
+                    if (password_verify($password, $registrado["PASSWORD"])) {
                         session_start();
                         $_SESSION["user"] = $user;
                             header("Location: catalogo.php");
