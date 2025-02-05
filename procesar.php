@@ -165,10 +165,10 @@ $rutaFoto = $_SESSION["rutaFoto"] ?? ''
                     <a href="#" class="nav-link px-2 text-body-secondary">Ver catálogo</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link px-2 text-body-secondary">Iniciar sesión</a>
+                    <a href="http://localhost/ProyectoCerveceria/index.php" class="nav-link px-2 text-body-secondary">Iniciar sesión</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link px-2 text-body-secondary">Cerrar sesión</a>
+                    <a href="http://localhost/ProyectoCerveceria/cerrar_sesion.php" class="nav-link px-2 text-body-secondary">Cerrar sesión</a>
                 </li>
             </ul>
             <p class="text-center text-body-secondary">

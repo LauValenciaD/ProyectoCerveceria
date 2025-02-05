@@ -65,9 +65,13 @@
                         $_SESSION["user"] = $user;
                             header("Location: catalogo.php");
                             exit();
+                        } else {
+                            $mensaje = "<div class= 'text-danger'>Contraseña errónea</div>";
+                        array_push($errores, $mensaje);
                         }
                     } else {
                         $mensaje = "<div class= 'text-danger'>Usuario no registrado</div>";
+                        array_push($errores, $mensaje);
                     }
                     //CODIGO PARA REGISTRAR USUARIOS CON CLAVE CIFRADA
 //                } else { // Si el usuario NO está registrado
@@ -108,7 +112,7 @@
                                     <a class="nav-link nav-title" href="index.php">HOME</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link nav-title" href="#" onclick="alert('Inicia sesión para acceder al catálogo.')">CATÁLOGO</a>
+                                    <a class="nav-link nav-title" href="#">CATÁLOGO</a>
                                 </li>
                             </ul>
                         </div>
@@ -204,13 +208,13 @@
                     <a href="#" class="nav-link px-2 text-body-secondary">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link px-2 text-body-secondary">Ver catálogo</a>
+                    <a href="http://localhost/ProyectoCerveceria/catalogo.php" class="nav-link px-2 text-body-secondary">Ver catálogo</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link px-2 text-body-secondary">Iniciar sesión</a>
+                    <a href="http://localhost/ProyectoCerveceria/index.php" class="nav-link px-2 text-body-secondary">Iniciar sesión</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link px-2 text-body-secondary">Cerrar sesión</a>
+                    <a href="http://localhost/ProyectoCerveceria/cerrar_sesion.php" class="nav-link px-2 text-body-secondary">Cerrar sesión</a>
                 </li>
             </ul>
             <p class="text-center text-body-secondary">
