@@ -1,11 +1,10 @@
 <?php
 session_start();
-require_once "conexion.php"; 
+require_once "conexion.php";
 require_once "funcion_carrito.php";
 //si no está iniciada la sesión, te obliga a iniciar sesión
 if (!isset($_SESSION['user'])) {
     header("Location:index.php");
-    exit();
 }
 $user = $_SESSION['user'];
 $root = false;
@@ -16,8 +15,6 @@ if (isset($_SESSION["usuario_id"])) {
     inicializarCarrito($_SESSION["usuario_id"], $con);
     $carrito_id = $_SESSION['carrito_id'];
 }
-// Recuperar las variables de sesión
-$producto_id = $_SESSION["producto_id"] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -29,30 +26,37 @@ $producto_id = $_SESSION["producto_id"] ?? '';
         <link rel="stylesheet" href="assets/css/bootstrap.css" />
         <link rel="stylesheet" href="assets/css/style.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
         <!-- Hecho por Laura Valencia Díaz -->
         <title>Cervecería - Laura Valencia</title>
     </head>
 
     <body>
         <?php
-  //mostrar datos del producto
-        $sql = "SELECT * FROM productos WHERE ID_PRODUCTO = ?";
-        $sentencia = mysqli_prepare($con, $sql);
-        mysqli_stmt_bind_param($sentencia, "s", $producto_id);
-        mysqli_stmt_execute($sentencia);
-        $result = mysqli_stmt_get_result($sentencia);
-        $producto = mysqli_fetch_assoc($result);
-
-        mysqli_stmt_close($sentencia);
-        
-        if (isset($_POST["carrito"])) {
-            $cantidad= $_POST["unidades"];
-        // Llamar a la función para agregar el producto al carrito
-        agregarAlCarrito($carrito_id, $_POST["producto_id"], $cantidad, $con);
-        header("Location:ver_carrito.php");
-        exit();
+        //este codigo se lanza cuando se pulse el boton de modificar o borrar
+        if (isset($_POST["modificar"])) {
+            $_SESSION["producto_id"] = $_POST["producto_id"];
+            header("Location:modificar_prod.php");
+            exit();
         }
-      
+        if (isset($_POST["borrar"])) {
+            $_SESSION["producto_id"] = $_POST["producto_id"];
+            header("Location:borrar_prod.php");
+            exit();
+        }
+           if (isset($_POST["detalles"])) {
+            $_SESSION["producto_id"] = $_POST["producto_id"];
+           header("Location:detalles.php");
+           exit();
+           }
+            
+            if (isset($_POST["carrito"])) {
+                $cantidad= 1;
+            // Llamar a la función para agregar el producto al carrito
+            agregarAlCarrito($carrito_id, $_POST["producto_id"], $cantidad, $con);
+            header("Location:ver_carrito.php");
+            exit();
+        }
         ?>
         <header>
             <nav class="navbar navbar-expand-lg navbar-light shadow d-flex justify-content-center">
@@ -78,7 +82,7 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                                 <li class="nav-item">
                                     <a class="nav-link nav-title" href="catalogo.php">CATÁLOGO</a>
                                 </li>
-                                 <!-- si el usuario no es admin, no verá esta opción -->
+                                <!-- si el usuario no es admin, no verá esta opción -->
                                   <li class="nav-item" <?php if (!$root) {echo 'style= "display:none;"';}
                                    ?>>
                                     <a class="nav-link nav-title" href="insertar.php">INSERTAR</a>
@@ -104,68 +108,71 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                            data-bs-target="#container_search" id="inputMobileSearch">
                             <i class="fa fa-fw fa-search text-dark mr-2"></i>
                         </a>
-                        <a class="nav-icon position-relative text-decoration-none" href="ver_carrito.php">
+                        <a class="nav-icon position-relative text-decoration-none" href="#">
                             <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i>
                         </a>
-                        <a class="nav-icon position-relative text-decoration-none" href="">
+                        <a class="nav-icon position-relative text-decoration-none" href="ver_carrito.php">
                             <i class="fa fa-fw fa-user text-dark mr-3"></i>
                         </a>
-                       <?php  echo '<p class= "m-0">Hola, ' . $user . '</p>'; ?>
+                        <?php  echo '<p class= "m-0">Hola, ' . $user . '</p>'; ?>
                     </div>
                 </div>
             </nav>
         </header>
         <main>
-            <section>
-                <div class="container mt-5">
-                    <div class="card shadow-lg">
-                        <div class="card-header bg-primary text-white text-center">
-                            <h1 class="mb-0">Detalles de la Cerveza</h1>
-                        </div>
-                        <div class="card-body">
-                            <!--            imprime los datos de la cerveza-->
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><strong>Denominación:</strong> <?= $producto["Denominacion_Cerveza"] ?></li>
-                                <li class="list-group-item"><strong>Marca:</strong> <?= $producto["Marca"] ?></li>
-                                <li class="list-group-item"><strong>Tipo:</strong> <?= $producto["Tipo_Cerveza"] ?></li>
-                                <li class="list-group-item"><strong>Formato:</strong> <?= $producto["Formato"] ?></li>
-                                <li class="list-group-item"><strong>Cantidad:</strong> <?= $producto["Cantidad"] ?></li>
-                                <li class="list-group-item"><strong>Alérgenos:</strong> 
-                                    <?= !empty($producto["alergias"]) ? implode(", ", $producto["alergias"]) : "Sin alérgenos" ?>
-                                </li>
-                                <li class="list-group-item"><strong>Fecha de consumo preferente:</strong> <?= $producto["Fecha_Consumo"] ?></li>
-                                <li class="list-group-item"><strong>Precio:</strong> <?= $producto["Precio"] ?> €</li>
-                                <li class="list-group-item"><strong>Observaciones:</strong>
-                                    <!--                    si está vacía imprime este mensaje-->
-                                    <?= !empty($producto["Observaciones"]) ? $producto["Observaciones"] : "Sin observaciones" ?>
-                                </li>
-                                <!--                    si está vacía imprime este mensaje-->
-                                <li class="list-group-item">
-                                    <strong>Foto:</strong>
-                                    <?= !empty($producto["Foto"]) ? "<img src='" . $producto["Foto"] . "' style='height: 250px'>" : "Sin foto" ?>
-                                </li>
-                            </ul>
-                        </div>
-                         <form action="detalles.php" method="post" enctype="multipart/form-data">
-                            <!-- Botón de envío -->
-                            <div class="text-center pb-3">
-                          <input type='hidden' name='producto_id' value=' <?= $producto['ID_PRODUCTO']?>'/>
-                                <label for="unidades">Unidades:</label>
-                                <input type="number" name="unidades" id="unidades" value=1>
-                                <button type='submit' name='carrito' class='btn btn-success m-1'>Añadir al carrito <i class='fa-solid fa-cart-shopping'></i></button>
-                            <a href="catalogo.php" class="btn btn-secondary">Volver</a>
-                        </div> </form>
-                    </div>
-                </div>
-            </section>
+        <section class="container my-4">
+    <h2>Tu Carrito</h2>
+
+    <?php
+    $productos = mostrarCarrito($con);
+    if (empty($productos)) {
+        echo "<p>El carrito está vacío.</p>";
+    } else {
+        echo '<div class="list-group">';  // Lista de productos
+        $precioTotal = 0;
+        foreach ($productos as $producto) {
+            $subtotal = $producto['cantidad'] * $producto['Precio'];
+            $precioTotal += $subtotal;
+            echo '<div class="list-group-item d-flex justify-content-between align-items-center py-2">';
+            echo "<div>";
+            echo "<strong>{$producto['Denominacion_Cerveza']}</strong><br>";
+            echo "Cantidad: {$producto['cantidad']} x {$producto['Precio']}€<br>";
+            echo "<small>Total: {$subtotal}€</small>";
+            echo "</div>";
+            echo '<form method="POST" action="quitar_del_carrito.php" class="d-inline">';
+            echo "<input type='hidden' name='producto_id' value='{$producto['id_producto']}'>";
+            echo "<button type='submit' name='quitar' class='btn btn-danger btn-sm'>Quitar</button>";
+            echo '</form>';
+            echo '</div>';
+        }
+        echo '</div>';
+
+        // Mostrar precio total y botón Comprar
+        echo "<div class='mt-4 text-end'>";
+        echo "<h4>Total: {$precioTotal}€</h4>";
+        echo '<form method="POST" action="comprar.php">';
+        echo '<button type="submit" name="comprar" class="btn btn-primary btn-lg">Comprar</button>';
+        echo '</form>';
+        echo "</div>";
+    }
+    ?>
+
+</section>
+
+
+</section>
+
         </main>
         <footer class="py-3 my-4 border-top">
             <ul class="nav justify-content-center pb-3 mb-3">
                 <li class="nav-item">
-                    <a href="http://localhost/ProyectoCerveceria/index.php" class="nav-link px-2 text-body-secondary">Iniciar sesión</a>
+                    <a href="#" class="nav-link px-2 text-body-secondary">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a href="http://localhost/ProyectoCerveceria/cerrar_sesion.php" class="nav-link px-2 text-body-secondary">Cerrar sesión</a>
+                    <a href="index.php" class="nav-link px-2 text-body-secondary">Iniciar sesión</a>
+                </li>
+                <li class="nav-item">
+                    <a href="cerrar_sesion.php" class="nav-link px-2 text-body-secondary">Cerrar sesión</a>
                 </li>
             </ul>
             <p class="text-center text-body-secondary">
@@ -174,6 +181,6 @@ $producto_id = $_SESSION["producto_id"] ?? '';
         </footer>
 
         <script src="assets/js/bootstrap.bundle.min.js"></script>
-    </body>
+        </body>
 
 </html>

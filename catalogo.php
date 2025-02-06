@@ -1,5 +1,7 @@
 <?php
 session_start();
+require_once "conexion.php";
+require_once "funcion_carrito.php";
 //si no está iniciada la sesión, te obliga a iniciar sesión
 if (!isset($_SESSION['user'])) {
     header("Location:index.php");
@@ -8,6 +10,10 @@ $user = $_SESSION['user'];
 $root = false;
 if ($user == "root") {
     $root = true;
+}
+if (isset($_SESSION["usuario_id"])) {
+    inicializarCarrito($_SESSION["usuario_id"], $con);
+    $carrito_id = $_SESSION['carrito_id'];
 }
 ?>
 <!DOCTYPE html>
@@ -19,7 +25,8 @@ if ($user == "root") {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="assets/css/bootstrap.css" />
         <link rel="stylesheet" href="assets/css/style.css" />
-        <link rel="stylesheet" href="assets/css/fontawesome.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
         <!-- Hecho por Laura Valencia Díaz -->
         <title>Cervecería - Laura Valencia</title>
     </head>
@@ -44,7 +51,10 @@ if ($user == "root") {
            }
             
             if (isset($_POST["carrito"])) {
-            $_SESSION["producto_id"] = $_POST["producto_id"];
+                $cantidad= 1;
+            // Llamar a la función para agregar el producto al carrito
+            agregarAlCarrito($carrito_id, $_POST["producto_id"], $cantidad, $con);
+            header("Location:ver_carrito.php");
             exit();
         }
         ?>
@@ -98,10 +108,10 @@ if ($user == "root") {
                            data-bs-target="#container_search" id="inputMobileSearch">
                             <i class="fa fa-fw fa-search text-dark mr-2"></i>
                         </a>
-                        <a class="nav-icon position-relative text-decoration-none" href="#">
+                        <a class="nav-icon position-relative text-decoration-none" href="ver_carrito.php">
                             <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i>
                         </a>
-                        <a class="nav-icon position-relative text-decoration-none" href="#">
+                        <a class="nav-icon position-relative text-decoration-none" href="">
                             <i class="fa fa-fw fa-user text-dark mr-3"></i>
                         </a>
                         <?php  echo '<p class= "m-0">Hola, ' . $user . '</p>'; ?>
@@ -122,16 +132,16 @@ if ($user == "root") {
                                 <th scope="col">Tipo</th>
                                 <th scope="col">Formato</th>
                                 <th scope="col">Tamaño</th>
+                                <th scope="col">Precio</th>
                                 <th scope="col">Foto</th>
                                 <th scope="col"<?php if (!$root) {echo 'style= "display:none;"';}
                                    ?>>Opciones de administrador</th>
-                                <th scope="col"<?php if (!$root) {echo 'style= "display:none;"';}
+                                <th scope="col"<?php if ($root) {echo 'style= "display:none;"';}
                                    ?>>Opciones de compra</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                            require_once "conexion.php";
                             $peticion = mysqli_prepare($con, "SELECT * FROM productos");
                             mysqli_stmt_execute($peticion);
                             $resultado = mysqli_stmt_get_result($peticion);
@@ -144,8 +154,9 @@ if ($user == "root") {
                                 echo "<td>" . $producto["Tipo_Cerveza"] . "</td>";
                                 echo "<td>" . $producto["Formato"] . "</td>";
                                 echo "<td>" . $producto["Cantidad"] . "</td>";
+                                echo "<td>" . $producto["Precio"] . "</td>";
                                 if (!empty($producto["Foto"])) {
-                                    echo "<td><img src='" . $producto['Foto'] . "' alt='ImagenCerveza " . $producto["Denominacion_Cerveza"] . "' style='width: 50px; height: 50px;'></td>";
+                                    echo "<td><img src='" . $producto['Foto'] . "' alt='Imagen " . $producto["Denominacion_Cerveza"] . "' style='width: 50px; height: 50px;'></td>";
                                 } else {
                                     echo "<td>Sin foto</td>";
                                 }
@@ -172,7 +183,7 @@ if ($user == "root") {
                                     . "' />";
                                     echo "<button type='submit' name='detalles' class='btn btn-primary'>Ver más detalles</button>"
                                     ;
-                                    echo "<button type='submit' name='carrito' class='btn btn-success m-1'>Añadir al carrito</button>"
+                                    echo "<button type='submit' name='carrito' class='btn btn-success m-1'>Añadir al carrito <i class='fa-solid fa-cart-shopping'></i></button>"
                                     ;
                                     echo "</form>";
                                     echo "</td>";

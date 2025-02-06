@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="assets/css/bootstrap.css" />
         <link rel="stylesheet" href="assets/css/style.css">
-        <link rel="stylesheet" href="assets/css/fontawesome.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <!-- Hecho por Laura Valencia Díaz -->
         <title>Cervecería - Laura Valencia</title>
     </head>
@@ -47,7 +47,6 @@
                
             }
 
-            //PONER MENSAJE DE ERROR SI HAY CARACTERES RAROS?
 
             if (count($errores) == 0) {
                 // Conexión a la base de datos
@@ -63,6 +62,7 @@
                     if (password_verify($password, $registrado["PASSWORD"])) {
                         session_start();
                         $_SESSION["user"] = $user;
+                        $_SESSION["usuario_id"] = $registrado["ID_USUARIO"]; //Guardamos el id para buscar el carrito luego
                             header("Location: catalogo.php");
                             exit();
                         } else {
