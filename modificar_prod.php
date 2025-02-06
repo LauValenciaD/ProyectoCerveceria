@@ -41,6 +41,7 @@ $producto_id = $_SESSION["producto_id"] ?? '';
             $dato = htmlspecialchars($dato);
             return $dato;
         }
+
         //codigo para comprobar que este bien la foto
         function comprobarImg(&$mensaje) {
             // Verificar si hay errores en la subida del archivo
@@ -54,10 +55,9 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                 $tipo = $_FILES['foto']['type'];
                 $origen = $_FILES['foto']['tmp_name'];
 
-                if ($tamanio > 1000000) { // Verificar tamaño
-                    $mensaje = "<div class='text-danger'>La imagen es demasiado grande. Máximo 1 MB.</div>";
-                }
-                if ($tipo !== "image/jpeg" && $tipo !== "image/png") { // Verificar tipo de archivo
+                if ($tamanio > 4000000) { // Verificar tamaño
+                    $mensaje = "<div class='text-danger'>La imagen es demasiado grande. Máximo 4 MB.</div>";
+                } elseif ($tipo !== "image/jpeg" && $tipo !== "image/png") { // Verificar tipo de archivo
                     $mensaje = "<div class='text-danger'>La imagen debe ser jpg o png. Tipo de archivo: $tipo </div>";
                 } else {
 
@@ -82,8 +82,8 @@ $producto_id = $_SESSION["producto_id"] ?? '';
             $cantidad = $_POST["cantidad"];
 
             $tipo = "";
-            $rutaFotoNueva=null;
-            $rutaFoto= $producto["Foto"];
+            $rutaFotoNueva = null;
+            $rutaFoto = $producto["Foto"];
             $observaciones = comprobarNombre($_POST["observaciones"]);
 
             $precioMal = false;
@@ -100,13 +100,13 @@ $producto_id = $_SESSION["producto_id"] ?? '';
             } else {
                 $tipo = $_POST["tipo"];
             }
-            if ($marca == "default"){
+            if ($marca == "default") {
                 $marca = $producto["Marca"];
             }
-            if ($formato == "default"){
+            if ($formato == "default") {
                 $formato = $producto["Formato"];
             }
-            if ($cantidad == "default"){
+            if ($cantidad == "default") {
                 $cantidad = $producto["Cantidad"];
             }
 
@@ -147,12 +147,13 @@ $producto_id = $_SESSION["producto_id"] ?? '';
 
             // Si no hay errores, procesa y hace el update de la cerveza
             if (!$errorFoto && !$precioMal) {
-                if ($rutaFoto !== "" && $rutaFotoNueva !== null) { //si se quiere reemplazar la foto
-                    if (file_exists($producto["Foto"])) { //la ruta registrada
-                        unlink($producto["Foto"]); // Borrar la foto del servidor
-                        $rutaFoto = $rutaFotoNueva; //asi siempre se sube una ruta
+                if ($rutaFotoNueva !== null) { // Si hay una nueva imagen
+                    if (file_exists($producto["Foto"])) { // Si la antigua existe
+                        unlink($producto["Foto"]); // Se borra la imagen antigua
                     }
+                    $rutaFoto = $rutaFotoNueva; // Se actualiza la ruta con la nueva imagen
                 }
+
 
                 $actualizacion = mysqli_prepare($con, "UPDATE productos
                                         SET Denominacion_Cerveza = ?,
@@ -176,7 +177,6 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                     } else {
                         die("Error en la ejecución del UPDATE: " . mysqli_error($con));
                     }
-                    
                 }
             }
         }
@@ -200,16 +200,13 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                         <div class="flex-fill">
                             <ul class="nav navbar-nav mx-lg-auto d-flex justify-content-center">
                                 <li class="nav-item">
-                                    <a class="nav-link nav-title" href="index.php">HOME</a>
+                                    <a class="nav-link nav-title" href="cerrar_sesion.php">HOME</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link nav-title" href="catalogo.php">CATÁLOGO</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link nav-title" href="insertar.php">INSERTAR</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link nav-title" href="cerrar_sesion.php">CERRAR SESIÓN</a>
                                 </li>
                             </ul>
                         </div>
@@ -238,6 +235,7 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                         <a class="nav-icon position-relative text-decoration-none" href="#">
                             <i class="fa fa-fw fa-user text-dark mr-3"></i>
                         </a>
+                        <?php  echo '<p class= "m-0">Hola, ' . $user . '</p>'; ?>
                     </div>
                 </div>
             </nav>
@@ -272,8 +270,6 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                                     <?= !empty($producto["Foto"]) ? "<img src='" . $producto["Foto"] . "' style='height: 250px'>" : "Sin foto" ?>
                                 </li>
 
-
-                                </li>
                             </ul>
                         </div>
                         <div class="card-footer text-center">
@@ -351,7 +347,7 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                                 <label for="formato" class="col-sm-4 col-form-label fw-bold">Formato:</label>
                                 <div class="col-sm-8">
                                     <select name="formato" id="formato" class="form-select">
-                                    <option value="default">No cambiar</option>
+                                        <option value="default">No cambiar</option>
                                         <option value="Lata">Lata</option>
                                         <option value="Botella">Botella</option>
                                         <option value="Pack">Pack</option>
@@ -364,7 +360,7 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                                 <label for="cantidad" class="col-sm-4 col-form-label fw-bold">Tamaño:</label>
                                 <div class="col-sm-8">
                                     <select name="cantidad" id="cantidad" class="form-select">
-                                    <option value="default">No cambiar</option>
+                                        <option value="default">No cambiar</option>
                                         <option value="Botellin">Botellín</option>
                                         <option value="Tercio">Tercio</option>
                                         <option value="Medio litro">Medio litro</option>

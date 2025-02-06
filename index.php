@@ -107,14 +107,6 @@
                     <div class="collapse navbar-collapse flex-fill d-lg-flex justify-content-lg-center"
                          id="container_main_nav">
                         <div class="flex-fill">
-                            <ul class="nav navbar-nav mx-lg-auto d-flex justify-content-center">
-                                <li class="nav-item">
-                                    <a class="nav-link nav-title" href="index.php">HOME</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link nav-title" href="#">CATÁLOGO</a>
-                                </li>
-                            </ul>
                         </div>
                     </div>
 

@@ -1,10 +1,12 @@
 <?php
 session_start();
 $user = $_SESSION['user'];
-$root = false;
-if ($user == "root") {
-    $root = true;
+if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inicio
+    alert("Debes ser root para estar en esta página.");
+    header("Location: index.php");
 }
+// Recuperar las variables de sesión
+$producto_id = $_SESSION["producto_id"] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -22,15 +24,38 @@ if ($user == "root") {
 
     <body>
         <?php
-        //este codigo se lanza cuando se pulse el boton de modificar o borrar
-        if (isset($_POST["modificar"])) {
-            $_SESSION["producto_id"] = $_POST["producto_id"];
-            header("Location:modificar_prod.php");
-        }
-        if (isset($_POST["borrar"])) {
-            $_SESSION["producto_id"] = $_POST["producto_id"];
-            header("Location:borrar_prod.php");
-        }
+        require_once "conexion.php";   //mostrar datos del producto
+        $sql = "SELECT * FROM productos WHERE ID_PRODUCTO = ?";
+        $sentencia = mysqli_prepare($con, $sql);
+        mysqli_stmt_bind_param($sentencia, "s", $producto_id);
+        mysqli_stmt_execute($sentencia);
+        $result = mysqli_stmt_get_result($sentencia);
+        $producto = mysqli_fetch_assoc($result);
+
+        mysqli_stmt_close($sentencia);
+
+       
+
+        if (isset($_POST["submit"])) {
+            if ($producto["Foto"] !== null) {
+                        if (file_exists($producto["Foto"])) {
+                            unlink($producto["Foto"]); // Borrar la foto del servidor
+                        }
+                    }
+                $actualizacion = mysqli_prepare($con, "DELETE FROM productos
+                                        WHERE ID_PRODUCTO = ?");
+                if ($actualizacion) {
+                    // Vincular los parámetros para la consulta preparada
+                    mysqli_stmt_bind_param($actualizacion, 'i', $producto_id);
+                    // Ejecutar la consulta
+                    if (mysqli_stmt_execute($actualizacion)) {
+                        header("Location: catalogo.php");
+                        exit();
+                    } else {
+                        die("Error en la ejecución del UPDATE: " . mysqli_error($con));
+                    }
+                }
+            }
         ?>
         <header>
             <nav class="navbar navbar-expand-lg navbar-light shadow d-flex justify-content-center">
@@ -56,7 +81,7 @@ if ($user == "root") {
                                 <li class="nav-item">
                                     <a class="nav-link nav-title" href="catalogo.php">CATÁLOGO</a>
                                 </li>
-                                  <li class="nav-item">
+                                <li class="nav-item">
                                     <a class="nav-link nav-title" href="insertar.php">INSERTAR</a>
                                 </li>
                             </ul>
@@ -86,76 +111,59 @@ if ($user == "root") {
                         <a class="nav-icon position-relative text-decoration-none" href="#">
                             <i class="fa fa-fw fa-user text-dark mr-3"></i>
                         </a>
-                        <?php  echo '<p class= "m-0">Hola, ' . $user . '</p>'; ?>
+                       <?php  echo '<p class= "m-0">Hola, ' . $user . '</p>'; ?>
                     </div>
                 </div>
             </nav>
         </header>
         <main>
             <section>
-                <!-- preparar tabla de productos -->
-                <h1 class="text-center mt-2">Catálogo de productos</h1>
-                <div class='container mt-5'>
-                    <table class='table table-bordered table-hover'>
-                        <thead class="table-info">
-                            <tr>
-                                <th scope="col">Denominación</th>
-                                <th scope="col">Marca</th>
-                                <th scope="col">Tipo</th>
-                                <th scope="col">Formato</th>
-                                <th scope="col">Tamaño</th>
-                                <th scope="col">Foto</th>
-                                <th scope="col">Opciones de administrador</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            require_once "conexion.php";
-                            $peticion = mysqli_prepare($con, "SELECT * FROM productos");
-                            mysqli_stmt_execute($peticion);
-                            $resultado = mysqli_stmt_get_result($peticion);
-                            $productos = mysqli_fetch_all($resultado, MYSQLI_ASSOC); //guardar todos los productos
-                            //añadir los productos a la tabla
-                            foreach ($productos as $registro) {
-                                echo "<tr scope='row'>";
-                                echo "<td>" . $registro["Denominacion_Cerveza"] . "</td>";
-                                echo "<td>" . $registro["Marca"] . "</td>";
-                                echo "<td>" . $registro["Tipo_Cerveza"] . "</td>";
-                                echo "<td>" . $registro["Formato"] . "</td>";
-                                echo "<td>" . $registro["Cantidad"] . "</td>";
-                                if (!empty($registro["Foto"])) {
-                                    echo "<td><img src='" . $registro['Foto'] . "' alt='ImagenCerveza " . $registro["Denominacion_Cerveza"] . "' style='width: 50px; height: 50px;'></td>";
-                                } else {
-                                    echo "<td>Sin foto</td>";
-                                }
-
-                                // Botones para modificar y borrar
-                                if ($root) {
-                                    echo "<td colspan='2'>";
-                                    echo "<form method='POST' action='catalogo.php'>";
-                                    echo "<input type='hidden' name='producto_id' value='" . $registro['ID_PRODUCTO']
-                                    . "' />";
-                                    echo "<button type='submit' name='modificar' class='btn btn-warning'>Modificar</button>"
-                                    ;
-                                    echo "<button type='submit' name='borrar' class='btn btn-danger m-1'>Eliminar</button>"
-                                    ;
-                                    echo "</form>";
-                                    echo "</td>";
-                                    echo "</tr>";
-                                }
-                            }
-                            ?>
-
-                        </tbody>
-                    </table>
+                <div class="container mt-5">
+                    <div class="card shadow-lg">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h1 class="mb-0">Detalles de la Cerveza</h1>
+                        </div>
+                        <div class="card-body">
+                            <!--            imprime los datos de la cerveza-->
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>Denominación:</strong> <?= $producto["Denominacion_Cerveza"] ?></li>
+                                <li class="list-group-item"><strong>Marca:</strong> <?= $producto["Marca"] ?></li>
+                                <li class="list-group-item"><strong>Tipo:</strong> <?= $producto["Tipo_Cerveza"] ?></li>
+                                <li class="list-group-item"><strong>Formato:</strong> <?= $producto["Formato"] ?></li>
+                                <li class="list-group-item"><strong>Cantidad:</strong> <?= $producto["Cantidad"] ?></li>
+                                <li class="list-group-item"><strong>Alérgenos:</strong> 
+                                    <?= !empty($producto["alergias"]) ? implode(", ", $producto["alergias"]) : "Sin alérgenos" ?>
+                                </li>
+                                <li class="list-group-item"><strong>Fecha de consumo preferente:</strong> <?= $producto["Fecha_Consumo"] ?></li>
+                                <li class="list-group-item"><strong>Precio:</strong> <?= $producto["Precio"] ?> €</li>
+                                <li class="list-group-item"><strong>Observaciones:</strong>
+                                    <!--                    si está vacía imprime este mensaje-->
+                                    <?= !empty($producto["Observaciones"]) ? $producto["Observaciones"] : "Sin observaciones" ?>
+                                </li>
+                                <!--                    si está vacía imprime este mensaje-->
+                                <li class="list-group-item">
+                                    <strong>Foto:</strong>
+                                    <?= !empty($producto["Foto"]) ? "<img src='" . $producto["Foto"] . "' style='height: 250px'>" : "Sin foto" ?>
+                                </li>
+                            </ul>
+                        </div>
+                         <form action="borrar_prod.php" method="post" enctype="multipart/form-data">
+                            <!-- Botón de envío -->
+                            <div class="text-center pb-3">
+                                <input type="submit" class="btn btn-danger" name="submit" value="Borrar">
+                            <a href="catalogo.php" class="btn btn-secondary">Volver</a>
+                        </div> </form>
+                    </div>
                 </div>
-
             </section>
         </main>
         <footer class="py-3 my-4 border-top">
             <ul class="nav justify-content-center pb-3 mb-3">
                 <li class="nav-item">
                     <a href="#" class="nav-link px-2 text-body-secondary">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link px-2 text-body-secondary">Ver catálogo</a>
                 </li>
                 <li class="nav-item">
                     <a href="http://localhost/ProyectoCerveceria/index.php" class="nav-link px-2 text-body-secondary">Iniciar sesión</a>

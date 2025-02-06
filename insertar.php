@@ -157,17 +157,14 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                         <div class="flex-fill">
                             <ul class="nav navbar-nav mx-lg-auto d-flex justify-content-center">
                                 <li class="nav-item">
-                                    <a class="nav-link nav-title" href="index.html">HOME</a>
+                                    <a class="nav-link nav-title" href="index.php">HOME</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link nav-title" href="#">CATÁLOGO</a>
+                                    <a class="nav-link nav-title" href="catalogo.php">CATÁLOGO</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link nav-title" href="#">INSERTAR</a>
+                                    <a class="nav-link nav-title" href="insertar.php">INSERTAR</a>
                                 </li>  
-                                <li class="nav-item">
-                                    <a class="nav-link nav-title" href="#">CERRAR SESIÓN</a>
-                                </li>
                             </ul>
                         </div>
                     </div>
@@ -195,6 +192,7 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                         <a class="nav-icon position-relative text-decoration-none" href="#">
                             <i class="fa fa-fw fa-user text-dark mr-3"></i>
                         </a>
+                        <?php  echo '<p class= "m-0">Hola, ' . $user . '</p>'; ?>
                     </div>
                 </div>
             </nav>
