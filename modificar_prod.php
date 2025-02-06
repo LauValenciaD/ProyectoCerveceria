@@ -1,9 +1,15 @@
 <?php
 session_start();
+//si no está iniciada la sesión, te obliga a iniciar sesión
+if (!isset($_SESSION['user'])) {
+    header("Location:index.php");
+    exit();
+}
 $user = $_SESSION['user'];
 if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inicio
     alert("Debes ser root para estar en esta página.");
     header("Location: index.php");
+    exit();
 }
 // Recuperar las variables de sesión
 $producto_id = $_SESSION["producto_id"] ?? '';

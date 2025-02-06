@@ -197,12 +197,6 @@
         <footer class="py-3 my-4 mt-4 border-top">
             <ul class="nav justify-content-center pb-3 mb-3">
                 <li class="nav-item">
-                    <a href="#" class="nav-link px-2 text-body-secondary">Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a href="http://localhost/ProyectoCerveceria/catalogo.php" class="nav-link px-2 text-body-secondary">Ver catálogo</a>
-                </li>
-                <li class="nav-item">
                     <a href="http://localhost/ProyectoCerveceria/index.php" class="nav-link px-2 text-body-secondary">Iniciar sesión</a>
                 </li>
                 <li class="nav-item">

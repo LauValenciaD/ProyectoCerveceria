@@ -6,10 +6,9 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 $user = $_SESSION['user'];
-if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inicio
-    alert("Debes ser root para estar en esta página.");
-    header("Location: index.php");
-    exit();
+$root = false;
+if ($user == "root") {
+    $root = true;
 }
 // Recuperar las variables de sesión
 $producto_id = $_SESSION["producto_id"] ?? '';
@@ -39,29 +38,13 @@ $producto_id = $_SESSION["producto_id"] ?? '';
         $producto = mysqli_fetch_assoc($result);
 
         mysqli_stmt_close($sentencia);
-
-       
-
-        if (isset($_POST["submit"])) {
-            if ($producto["Foto"] !== null) {
-                        if (file_exists($producto["Foto"])) {
-                            unlink($producto["Foto"]); // Borrar la foto del servidor
-                        }
-                    }
-                $actualizacion = mysqli_prepare($con, "DELETE FROM productos
-                                        WHERE ID_PRODUCTO = ?");
-                if ($actualizacion) {
-                    // Vincular los parámetros para la consulta preparada
-                    mysqli_stmt_bind_param($actualizacion, 'i', $producto_id);
-                    // Ejecutar la consulta
-                    if (mysqli_stmt_execute($actualizacion)) {
-                        header("Location: catalogo.php");
-                        exit();
-                    } else {
-                        die("Error en la ejecución del UPDATE: " . mysqli_error($con));
-                    }
-                }
-            }
+        
+        if (isset($_POST["carrito"])) {
+            $_SESSION["producto_id"] = $_POST["producto_id"];
+            header("Location:detalles.php");
+            exit();
+        }
+      
         ?>
         <header>
             <nav class="navbar navbar-expand-lg navbar-light shadow d-flex justify-content-center">
@@ -87,7 +70,9 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                                 <li class="nav-item">
                                     <a class="nav-link nav-title" href="catalogo.php">CATÁLOGO</a>
                                 </li>
-                                <li class="nav-item">
+                                 <!-- si el usuario no es admin, no verá esta opción -->
+                                  <li class="nav-item" <?php if (!$root) {echo 'style= "display:none;"';}
+                                   ?>>
                                     <a class="nav-link nav-title" href="insertar.php">INSERTAR</a>
                                 </li>
                             </ul>
@@ -153,10 +138,10 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                                 </li>
                             </ul>
                         </div>
-                         <form action="borrar_prod.php" method="post" enctype="multipart/form-data">
+                         <form action="detalles.php" method="post" enctype="multipart/form-data">
                             <!-- Botón de envío -->
                             <div class="text-center pb-3">
-                                <input type="submit" class="btn btn-danger" name="submit" value="Borrar">
+                                <input type="submit" class="btn btn-success" name="carrito" value="Añadir al carrito">
                             <a href="catalogo.php" class="btn btn-secondary">Volver</a>
                         </div> </form>
                     </div>
@@ -165,12 +150,6 @@ $producto_id = $_SESSION["producto_id"] ?? '';
         </main>
         <footer class="py-3 my-4 border-top">
             <ul class="nav justify-content-center pb-3 mb-3">
-                <li class="nav-item">
-                    <a href="#" class="nav-link px-2 text-body-secondary">Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link px-2 text-body-secondary">Ver catálogo</a>
-                </li>
                 <li class="nav-item">
                     <a href="http://localhost/ProyectoCerveceria/index.php" class="nav-link px-2 text-body-secondary">Iniciar sesión</a>
                 </li>

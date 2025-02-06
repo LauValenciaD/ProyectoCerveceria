@@ -45,6 +45,7 @@ if ($user == "root") {
             
             if (isset($_POST["carrito"])) {
             $_SESSION["producto_id"] = $_POST["producto_id"];
+            header("Location:catalogo.php");
             exit();
         }
         ?>
