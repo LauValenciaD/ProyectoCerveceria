@@ -54,8 +54,6 @@ if (isset($_SESSION["usuario_id"])) {
                 $cantidad= 1;
             // Llamar a la función para agregar el producto al carrito
             agregarAlCarrito($carrito_id, $_POST["producto_id"], $cantidad, $con);
-            header("Location:ver_carrito.php");
-            exit();
         }
         ?>
         <header>
@@ -109,7 +107,7 @@ if (isset($_SESSION["usuario_id"])) {
                             <i class="fa fa-fw fa-search text-dark mr-2"></i>
                         </a>
                         <a class="nav-icon position-relative text-decoration-none" href="ver_carrito.php">
-                            <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i>
+                            <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i> <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark"><?php echo $_SESSION['cantidad_prod'] ?></span>
                         </a>
                         <a class="nav-icon position-relative text-decoration-none" href="">
                             <i class="fa fa-fw fa-user text-dark mr-3"></i>

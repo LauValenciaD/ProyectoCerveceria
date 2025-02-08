@@ -18,9 +18,10 @@ function inicializarCarrito($usuarioId, $conexion) {
         $stmt = $conexion->prepare($query);
         $stmt->bind_param("i", $usuarioId);
         $stmt->execute();
-        $_SESSION["carrito_id"] = $stmt->insert_id;
+        $_SESSION["carrito_id"] = $stmt->insert_id;  
     }
 }
+
 function agregarAlCarrito($carrito_id,$producto_id, $cantidad, $conexion) {
     // Verificar si el producto ya está en el carrito
     $query = "SELECT cantidad FROM productos_carritos WHERE id_carrito = ? AND id_producto = ?";
@@ -43,6 +44,13 @@ function agregarAlCarrito($carrito_id,$producto_id, $cantidad, $conexion) {
     $stmt->execute();
     $stmt->close();
 }
+function borrarDelCarrito($carrito_id,$producto_id, $conexion) {
+    $query = "DELETE FROM productos_carritos WHERE id_carrito = ? AND id_producto = ?";
+    $stmt = $conexion->prepare($query);
+    $stmt->bind_param("ii", $carrito_id, $producto_id);
+    $stmt->execute();
+    $stmt->close();
+}
 
 
 function mostrarCarrito($conexion) {
@@ -62,4 +70,4 @@ function mostrarCarrito($conexion) {
 
 
 
-?>
+

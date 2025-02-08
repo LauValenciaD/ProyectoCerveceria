@@ -34,29 +34,10 @@ if (isset($_SESSION["usuario_id"])) {
     <body>
         <?php
         //este codigo se lanza cuando se pulse el boton de modificar o borrar
-        if (isset($_POST["modificar"])) {
-            $_SESSION["producto_id"] = $_POST["producto_id"];
-            header("Location:modificar_prod.php");
-            exit();
+        if (isset($_POST["quitar"])) {
+            borrarDelCarrito($carrito_id, $_POST["producto_id"], $con);
         }
-        if (isset($_POST["borrar"])) {
-            $_SESSION["producto_id"] = $_POST["producto_id"];
-            header("Location:borrar_prod.php");
-            exit();
-        }
-           if (isset($_POST["detalles"])) {
-            $_SESSION["producto_id"] = $_POST["producto_id"];
-           header("Location:detalles.php");
-           exit();
-           }
-            
-            if (isset($_POST["carrito"])) {
-                $cantidad= 1;
-            // Llamar a la función para agregar el producto al carrito
-            agregarAlCarrito($carrito_id, $_POST["producto_id"], $cantidad, $con);
-            header("Location:ver_carrito.php");
-            exit();
-        }
+
         ?>
         <header>
             <nav class="navbar navbar-expand-lg navbar-light shadow d-flex justify-content-center">
@@ -139,7 +120,7 @@ if (isset($_SESSION["usuario_id"])) {
             echo "Cantidad: {$producto['cantidad']} x {$producto['Precio']}€<br>";
             echo "<small>Total: {$subtotal}€</small>";
             echo "</div>";
-            echo '<form method="POST" action="quitar_del_carrito.php" class="d-inline">';
+            echo '<form method="POST" action="ver_carrito.php" class="d-inline">';
             echo "<input type='hidden' name='producto_id' value='{$producto['id_producto']}'>";
             echo "<button type='submit' name='quitar' class='btn btn-danger btn-sm'>Quitar</button>";
             echo '</form>';
