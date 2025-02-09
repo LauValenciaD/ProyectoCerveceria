@@ -15,6 +15,7 @@ if (isset($_SESSION["usuario_id"])) {
     inicializarCarrito($_SESSION["usuario_id"], $con);
     $carrito_id = $_SESSION['carrito_id'];
 }
+$_SESSION["cantidad_prod"] = contarArticulos($carrito_id, $con);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -44,16 +45,17 @@ if (isset($_SESSION["usuario_id"])) {
             header("Location:borrar_prod.php");
             exit();
         }
-           if (isset($_POST["detalles"])) {
+        if (isset($_POST["detalles"])) {
             $_SESSION["producto_id"] = $_POST["producto_id"];
-           header("Location:detalles.php");
-           exit();
-           }
-            
-            if (isset($_POST["carrito"])) {
-                $cantidad= 1;
+            header("Location:detalles.php");
+            exit();
+        }
+
+        if (isset($_POST["carrito"])) {
+            $cantidad = 1;
             // Llamar a la función para agregar el producto al carrito
             agregarAlCarrito($carrito_id, $_POST["producto_id"], $cantidad, $con);
+            $_SESSION["cantidad_prod"] = contarArticulos($carrito_id, $con);
         }
         ?>
         <header>
@@ -81,8 +83,10 @@ if (isset($_SESSION["usuario_id"])) {
                                     <a class="nav-link nav-title" href="catalogo.php">CATÁLOGO</a>
                                 </li>
                                 <!-- si el usuario no es admin, no verá esta opción -->
-                                  <li class="nav-item" <?php if (!$root) {echo 'style= "display:none;"';}
-                                   ?>>
+                                <li class="nav-item" <?php if (!$root) {
+            echo 'style= "display:none;"';
+        }
+        ?>>
                                     <a class="nav-link nav-title" href="insertar.php">INSERTAR</a>
                                 </li>
                             </ul>
@@ -107,12 +111,12 @@ if (isset($_SESSION["usuario_id"])) {
                             <i class="fa fa-fw fa-search text-dark mr-2"></i>
                         </a>
                         <a class="nav-icon position-relative text-decoration-none" href="ver_carrito.php">
-                            <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i> <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark"><?php echo $_SESSION['cantidad_prod'] ?></span>
+                            <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i> <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark"><?php if ($_SESSION['cantidad_prod'] > 0) { echo $_SESSION['cantidad_prod'];} ?></span>
                         </a>
                         <a class="nav-icon position-relative text-decoration-none" href="">
                             <i class="fa fa-fw fa-user text-dark mr-3"></i>
                         </a>
-                        <?php  echo '<p class= "m-0">Hola, ' . $user . '</p>'; ?>
+<?php echo '<p class= "m-0">Hola, ' . $user . '</p>'; ?>
                     </div>
                 </div>
             </nav>
@@ -132,10 +136,14 @@ if (isset($_SESSION["usuario_id"])) {
                                 <th scope="col">Tamaño</th>
                                 <th scope="col">Precio</th>
                                 <th scope="col">Foto</th>
-                                <th scope="col"<?php if (!$root) {echo 'style= "display:none;"';}
-                                   ?>>Opciones de administrador</th>
-                                <th scope="col"<?php if ($root) {echo 'style= "display:none;"';}
-                                   ?>>Opciones de compra</th>
+                                <th scope="col"<?php if (!$root) {
+    echo 'style= "display:none;"';
+}
+?>>Opciones de administrador</th>
+                                <th scope="col"<?php if ($root) {
+    echo 'style= "display:none;"';
+}
+?>>Opciones de compra</th>
                             </tr>
                         </thead>
                         <tbody>

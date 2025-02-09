@@ -102,38 +102,56 @@ if (isset($_SESSION["usuario_id"])) {
         </header>
         <main>
         <section class="container my-4">
-    <h2>Tu Carrito</h2>
+    <h2>Tu ticket de la compra</h2>
 
     <?php
-    $productos = mostrarCarrito($con);
-    if (empty($productos)) {
-        echo "<p>El carrito está vacío.</p>";
-    } else {
-        echo '<div class="list-group">';  // Lista de productos
-        $precioTotal = 0;
-        foreach ($productos as $producto) {
-            $subtotal = $producto['cantidad'] * $producto['Precio'];
-            $precioTotal += $subtotal;
-            echo '<div class="list-group-item d-flex justify-content-between align-items-center py-2">';
-            echo "<div>";
-            echo "<strong>{$producto['Denominacion_Cerveza']}</strong><br>";
-            echo "Cantidad: {$producto['cantidad']} x {$producto['Precio']}€<br>";
-            echo "<small>Total: {$subtotal}€</small>";
-            echo "</div>";
-            echo '<form method="POST" action="ver_carrito.php" class="d-inline">';
-            echo "<input type='hidden' name='producto_id' value='{$producto['id_producto']}'>";
-            echo "<button type='submit' name='quitar' class='btn btn-danger btn-sm'>Quitar</button>";
-            echo '</form>';
-            echo '</div>';
-        }
-        echo '</div>';
+$productos = mostrarCarrito($con);
 
-        // Mostrar precio total y botón Comprar
-        echo "<div class='mt-4 text-end'>";
-        echo "<h4>Total: {$precioTotal}€</h4>";
-        echo '<a href="ticket.php" class="btn btn-primary btn-lg">Comprar</a>';
-        echo "</div>";
+if (empty($productos)) {
+    echo "<p>No hay artículos.</p>";
+} else {
+    echo '<div class="table-responsive">';
+    echo '<table class="table table-bordered text-center">';
+    echo '<thead class="table-dark">';
+    echo '<tr>';
+    echo '<th>Producto</th>';
+    echo '<th>Cantidad</th>';
+    echo '<th>Precio Unitario</th>';
+    echo '<th>Subtotal</th>';
+    echo '</tr>';
+    echo '</thead>';
+    echo '<tbody>';
+
+    $precioTotal = 0;
+
+    foreach ($productos as $producto) {
+        $subtotal = $producto['cantidad'] * $producto['Precio'];
+        $precioTotal += $subtotal;
+
+        echo '<tr>';
+        echo "<td>{$producto['Denominacion_Cerveza']}</td>";
+        echo "<td>{$producto['cantidad']}</td>";
+        echo "<td>{$producto['Precio']}€</td>";
+        echo "<td>{$subtotal}€</td>";
+        echo '</tr>';
     }
+
+    echo '</tbody>';
+    echo '<tfoot>';
+    echo '<tr>';
+    echo '<td colspan="3" class="text-end"><strong>Total:</strong></td>';
+    echo "<td><strong>{$precioTotal}€</strong></td>";
+    echo '</tr>';
+    echo '</tfoot>';
+    echo '</table>';
+    echo '</div>';
+
+    // Botón para finalizar compra
+    echo '<div class="text-end mt-3">';
+    echo '<a href="ver_carrito.php" class="btn btn-primary btn-lg">Finalizar compra</a>';
+    echo '</div>';
+}
+vaciarCarrito($carrito_id, $con);
     ?>
 
 </section>

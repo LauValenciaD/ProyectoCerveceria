@@ -67,6 +67,25 @@ function mostrarCarrito($conexion) {
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }
+function vaciarCarrito($carrito_id, $conexion) {
+    $query = "DELETE FROM productos_carritos WHERE id_carrito = ?";
+    $stmt = $conexion->prepare($query);
+    $stmt->bind_param("i", $carrito_id);
+    $stmt->execute();
+    $stmt->close();
+}
+
+function contarArticulos($carrito_id, $conexion) {
+    $query = "SELECT SUM(cantidad) AS total FROM productos_carritos WHERE id_carrito = ?;";
+    $stmt = $conexion->prepare($query);
+    $stmt->bind_param("i", $carrito_id);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+    $fila = $resultado->fetch_assoc();
+
+    return $fila['total'] ?? 0; // Si es NULL, devuelve 0
+}
+
 
 
 
