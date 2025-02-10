@@ -3,15 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/xampp/htdocs/ProyectoCerveceria/admin_dashboard.php</file>
+            <file>file:/C:/xampp/htdocs/ProyectoCerveceria/header.php</file>
+            <file>file:/C:/xampp/htdocs/ProyectoCerveceria/footer.php</file>
             <file>file:/C:/xampp/htdocs/ProyectoCerveceria/catalogo.php</file>
+            <file>file:/C:/xampp/htdocs/ProyectoCerveceria/funciones.php</file>
             <file>file:/C:/xampp/htdocs/ProyectoCerveceria/insertar.php</file>
-            <file>file:/C:/xampp/htdocs/ProyectoCerveceria/modificar_prod.php</file>
             <file>file:/C:/xampp/htdocs/ProyectoCerveceria/index.php</file>
             <file>file:/C:/xampp/htdocs/ProyectoCerveceria/detalles.php</file>
-            <file>file:/C:/xampp/htdocs/ProyectoCerveceria/borrar_prod.php</file>
             <file>file:/C:/xampp/htdocs/ProyectoCerveceria/ver_carrito.php</file>
-            <file>file:/C:/xampp/htdocs/ProyectoCerveceria/funcion_carrito.php</file>
             <file>file:/C:/xampp/htdocs/ProyectoCerveceria/conexion.php</file>
             <file>file:/C:/xampp/htdocs/ProyectoCerveceria/ticket.php</file>
         </group>

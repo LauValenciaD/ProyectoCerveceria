@@ -1,7 +1,9 @@
 <!-- Hecho por Laura Valencia Díaz -->
 <?php 
 // datos para la conexion a MySQL
-define('DB_SERVER', 'localhost:3306'); //CUIDADO CON EL PUERTO, CAMBIAR AL DEL MySQL
+
+define('DB_SERVER', 'localhost:3310'); //CUIDADO CON EL PUERTO, CAMBIAR AL DEL MySQL
+
 define('DB_NAME', 'cervecerialaura'); 
 define('DB_USER', 'root'); 
 define('DB_PASS', ''); 
@@ -14,4 +16,4 @@ if (mysqli_connect_errno()) {
     echo "Fallo al conectar a MySQL: " . mysqli_connect_error();
     exit();
 }
-?>
+

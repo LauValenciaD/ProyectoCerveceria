@@ -33,18 +33,14 @@
             $password = $_POST["clave"];
             $errores = array();
             $mensaje = "";
-           
 
             if (empty($user)) {
-               $mensaje = "<div class= 'text-danger'>El correo está vacío</div>";
-               array_push($errores, $mensaje);
-               
-               
+                $mensaje = "<div class= 'text-danger'>El correo está vacío</div>";
+                array_push($errores, $mensaje);
             }
             if (empty($password)) {
-               $mensaje = "<div class= 'text-danger'>La contraseña está vacía</div>";
-               array_push($errores, $mensaje);
-               
+                $mensaje = "<div class= 'text-danger'>La contraseña está vacía</div>";
+                array_push($errores, $mensaje);
             }
 
 
@@ -63,17 +59,17 @@
                         session_start();
                         $_SESSION["user"] = $user;
                         $_SESSION["usuario_id"] = $registrado["ID_USUARIO"]; //Guardamos el id para buscar el carrito luego
-                            header("Location: catalogo.php");
-                            exit();
-                        } else {
-                            $mensaje = "<div class= 'text-danger'>Contraseña errónea</div>";
-                        array_push($errores, $mensaje);
-                        }
+                        header("Location: catalogo.php");
+                        exit();
                     } else {
-                        $mensaje = "<div class= 'text-danger'>Usuario no registrado</div>";
+                        $mensaje = "<div class= 'text-danger'>Contraseña errónea</div>";
                         array_push($errores, $mensaje);
                     }
-                    //CODIGO PARA REGISTRAR USUARIOS CON CLAVE CIFRADA
+                } else {
+                    $mensaje = "<div class= 'text-danger'>Usuario no registrado</div>";
+                    array_push($errores, $mensaje);
+                }
+                //CODIGO PARA REGISTRAR USUARIOS CON CLAVE CIFRADA
 //                } else { // Si el usuario NO está registrado
 //                       $passwordHash = cifrarClave($password); //por seguridad guardamos la clave cifrada
 //                    $sql = "INSERT INTO usuario (correo, password) VALUES (?, ?)";
@@ -86,54 +82,16 @@
 //                    } else {
 //                        die("Error inesperado: algo salió mal.");
 //                    }
-                }
             }
-        
+        }
         ?>
-        <header>
-            <nav class="navbar navbar-expand-lg navbar-light shadow d-flex justify-content-center">
+        <header> <!<!-- header simple -->
+            <nav class="navbar navbar-expand-lg navbar-light shadow d-flex">
                 <!-- logo -->
-                <div class="container d-flex justify-content-between align-items-center" id="header">
+                <div class="container d-flex justify-content-start" id="header">
                     <a class="navbar-brand logo" href="index.php"><img class="img-fluid" src="./assets/img/beer-logo.png"
                                                                        alt="" id="logo" /></a>
                     <h2>Cervecería online</h2>
-                    <!-- botón menu móvil -->
-                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#container_main_nav" aria-controls="container_main_nav" aria-expanded="false"
-                            aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <!--  menu collapse -->
-                    <div class="collapse navbar-collapse flex-fill d-lg-flex justify-content-lg-center"
-                         id="container_main_nav">
-                        <div class="flex-fill">
-                        </div>
-                    </div>
-
-                    <!-- barra de busqueda -->
-                    <div class="search-container ms-lg-3 d-none d-lg-block">
-                        <form action="" method="get">
-                            <div class="input-group">
-                                <input type="text" class="form-control nav-title" placeholder="Buscar..." />
-                                <div class="input-group-text">
-                                    <i class="fa fa-fw fa-search"></i>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- grupo de iconos -->
-                    <div class="navbar align-self-center d-flex flex-nowrap" id="grupoIconos">
-                        <a class="nav-icon d-inline d-lg-none" href="#" data-bs-toggle="modal"
-                           data-bs-target="#container_search" id="inputMobileSearch">
-                            <i class="fa fa-fw fa-search text-dark mr-2"></i>
-                        </a>
-                        <a class="nav-icon position-relative text-decoration-none" href="#">
-                            <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i>
-                        </a>
-                        <a class="nav-icon position-relative text-decoration-none" href="#">
-                            <i class="fa fa-fw fa-user text-dark mr-3"></i>
-                        </a>
-                    </div>
                 </div>
             </nav>
         </header>
@@ -172,13 +130,13 @@
                                         <strong>root</strong>.
                                     </p>
                                 </div>
-                                <?php
-                                        if (isset($_POST["submit"]) && count($errores) > 0) {
-                                            foreach ($errores as $mensaje) {
-                                            echo $mensaje;
-                                            }
-                                        }
-                                        ?>
+<?php
+if (isset($_POST["submit"]) && count($errores) > 0) {
+    foreach ($errores as $mensaje) {
+        echo $mensaje;
+    }
+}
+?>
 
                                 <div class="text-center text-lg-start mt-4 pt-2">
                                     <input type="submit" data-mdb-button-init data-mdb-ripple-init
@@ -194,21 +152,7 @@
             </section>
 
         </main>
-        <footer class="py-3 my-4 mt-4 border-top">
-            <ul class="nav justify-content-center pb-3 mb-3">
-                <li class="nav-item">
-                    <a href="http://localhost/ProyectoCerveceria/index.php" class="nav-link px-2 text-body-secondary">Iniciar sesión</a>
-                </li>
-                <li class="nav-item">
-                    <a href="http://localhost/ProyectoCerveceria/cerrar_sesion.php" class="nav-link px-2 text-body-secondary">Cerrar sesión</a>
-                </li>
-            </ul>
-            <p class="text-center text-body-secondary">
-                © 2025. Hecho por Laura Valencia
-            </p>
-        </footer>
-
-        <script src="assets/js/bootstrap.bundle.min.js"></script>
+<?php include_once 'footer.php' ?> <!-- el footer -->
     </body>
 
 </html>
