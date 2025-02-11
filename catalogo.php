@@ -94,12 +94,12 @@ require_once 'funciones.php';
                                 }
 
                                 // Botones para modificar y borrar
-                                if ($root) {
+                                if ($root=== true) {
                                     echo "<td colspan='3'>";
                                     echo "<form method='POST' action='catalogo.php'>";
                                     echo "<input type='hidden' name='producto_id' value='" . $producto['ID_PRODUCTO']
                                     . "' />";
-                                    echo "<button type='submit' name='detalles' class='btn btn-primary'>Ver más detalles</button>";
+                                    echo "<button type='submit' name='detalles' class='btn btn-primary m-1'>Ver más detalles</button>";
                                     echo "<button type='submit' name='modificar' class='btn btn-warning'>Modificar</button>"
                                     ;
                                     echo "<button type='submit' name='borrar' class='btn btn-danger m-1'>Eliminar</button>"
@@ -108,8 +108,8 @@ require_once 'funciones.php';
                                     echo "</td>";
                                     echo "</tr>";
                                 }
-                                if (!$root) {
-                                    echo "<td colspan='3'>";
+                                if ($root=== false) {
+                                    echo "<td colspan='2'>";
                                     echo "<form method='POST' action='catalogo.php'>";
                                     echo "<input type='hidden' name='producto_id' value='" . $producto['ID_PRODUCTO']
                                     . "' />";

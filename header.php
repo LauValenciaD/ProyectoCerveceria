@@ -24,7 +24,7 @@
                         </li>
                         <!-- si el usuario no es admin, no verá esta opción -->
                         <li class="nav-item" <?php
-                        if (!$root) {
+                        if ($root===false) {
                             echo 'style= "display:none;"';
                         }
                         ?>>
@@ -52,7 +52,7 @@
                     <i class="fa fa-fw fa-search text-dark mr-2"></i>
                 </a>
                 <a class="nav-icon position-relative text-decoration-none" href="ver_carrito.php">
-                    <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i> <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark"><?php if ($_SESSION['cantidad_prod'] > 0) {
+                    <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i> <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark"><?php if ($root==false && $_SESSION['cantidad_prod'] > 0) {
                             echo $_SESSION['cantidad_prod'];
                         } ?></span>
                 </a>
