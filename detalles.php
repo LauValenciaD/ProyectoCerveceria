@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "funciones.php"; 
+require_once "funciones.php";
 // Recuperar las variables de sesión
 $producto_id = $_SESSION["producto_id"] ?? '';
 ?>
@@ -72,10 +72,16 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                         <form action="detalles.php" method="post" enctype="multipart/form-data">
                             <!-- Botón de envío -->
                             <div class="text-center pb-3">
-                                <input type='hidden' name='producto_id' value=' <?= $producto['ID_PRODUCTO'] ?>'/>
-                                <label for="unidades">Unidades:</label>
-                                <input type="number" name="unidades" id="unidades" value=1>
-                                <button type='submit' name='carrito' class='btn btn-success m-1'>Añadir al carrito <i class='fa-solid fa-cart-shopping'></i></button>
+                                <!-- Si el usuario es admin, no podrá comprar -->
+                                <div <?php
+                                if ($root === true) { 
+                                    echo 'style= "display:none;"';
+                                }
+                                ?>> 
+                                    <input type='hidden' name='producto_id' value=' <?= $producto['ID_PRODUCTO'] ?>'/>
+                                    <label for="unidades">Unidades:</label>
+                                    <input type="number" name="unidades" id="unidades" value=1>
+                                    <button type='submit' name='carrito' class='btn btn-success m-1'>Añadir al carrito <i class='fa-solid fa-cart-shopping'></i></button></div>
                                 <a href="catalogo.php" class="btn btn-secondary">Volver</a>
                             </div> </form>
                     </div>

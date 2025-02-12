@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'funciones.php';
 $user = $_SESSION['user'];
 if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inicio
     alert("Debes ser root para estar en esta página.");
@@ -34,7 +35,6 @@ $rutaFoto = $_SESSION["rutaFoto"] ?? ''
     <body>
         <?php
 //insertar datos en la BD
-        require_once "conexion.php";
         //convertir a string
         $stringAlergenos = implode(", ", $alergenos);
         $mensaje = "";

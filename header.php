@@ -24,7 +24,7 @@
                         </li>
                         <!-- si el usuario no es admin, no verá esta opción -->
                         <li class="nav-item" <?php
-                        if ($root===false) {
+                        if ($root === false) {
                             echo 'style= "display:none;"';
                         }
                         ?>>
@@ -36,14 +36,17 @@
 
             <!-- barra de busqueda -->
             <div class="search-container ms-lg-3 d-none d-lg-block">
-                <form action="" method="get">
+                <form action="busqueda.php" method="post">
                     <div class="input-group">
-                        <input type="text" class="form-control nav-title" placeholder="Buscar..." />
-                        <div class="input-group-text">
-                            <i class="fa fa-fw fa-search"></i>
+                        <input type="text" class="form-control nav-title" placeholder="Buscar..." name="txtbuscar"/>
+                        <div class="input-group-append">
+                            <button type="submit" name="btnbuscar" class="btn btn-outline-secondary">
+                                <i class="fa fa-fw fa-search"></i>
+                            </button>
                         </div>
                     </div>
                 </form>
+
             </div>
             <!-- grupo de iconos -->
             <div class="navbar align-self-center d-flex flex-nowrap" id="grupoIconos">
@@ -51,12 +54,18 @@
                    data-bs-target="#container_search" id="inputMobileSearch">
                     <i class="fa fa-fw fa-search text-dark mr-2"></i>
                 </a>
-                <a class="nav-icon position-relative text-decoration-none" href="ver_carrito.php">
-                    <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i> <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark"><?php if ($root==false && $_SESSION['cantidad_prod'] > 0) {
+                <a class="nav-icon position-relative text-decoration-none" href="ver_carrito.php" <?php
+                if ($root === true) {
+                    echo 'style= "display:none;"';
+                }
+                ?>>
+                    <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i> <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark"><?php
+                        if ($root == false && $_SESSION['cantidad_prod'] > 0) {
                             echo $_SESSION['cantidad_prod'];
-                        } ?></span>
+                        }
+                        ?></span>
                 </a>
-                <a class="nav-icon position-relative text-decoration-none" href="">
+                <a class="nav-icon position-relative text-decoration-none">
                     <i class="fa fa-fw fa-user text-dark mr-3"></i>
                 </a>
 <?php echo '<p class= "m-0">Hola, ' . $user . '</p>'; ?>

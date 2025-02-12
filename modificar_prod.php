@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'funciones.php';
 //si no está iniciada la sesión, te obliga a iniciar sesión
 if (!isset($_SESSION['user'])) {
     header("Location:index.php");
@@ -189,44 +190,7 @@ $producto_id = $_SESSION["producto_id"] ?? '';
         ?>
         <?php include_once 'header.php' ?> <!-- el header -->
         <main>
-            <section>
-                <div class="container mt-5">
-                    <div class="card shadow-lg">
-                        <div class="card-header bg-primary text-white text-center">
-                            <h1 class="mb-0">Detalles de la Cerveza</h1>
-                        </div>
-                        <div class="card-body">
-                            <!--            imprime los datos de la cerveza-->
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><strong>Denominación:</strong> <?= $producto["Denominacion_Cerveza"] ?></li>
-                                <li class="list-group-item"><strong>Marca:</strong> <?= $producto["Marca"] ?></li>
-                                <li class="list-group-item"><strong>Tipo:</strong> <?= $producto["Tipo_Cerveza"] ?></li>
-                                <li class="list-group-item"><strong>Formato:</strong> <?= $producto["Formato"] ?></li>
-                                <li class="list-group-item"><strong>Cantidad:</strong> <?= $producto["Cantidad"] ?></li>
-                                <li class="list-group-item"><strong>Alérgenos:</strong> 
-                                    <?= !empty($producto["alergias"]) ? implode(", ", $producto["alergias"]) : "Sin alérgenos" ?>
-                                </li>
-                                <li class="list-group-item"><strong>Fecha de consumo preferente:</strong> <?= $producto["Fecha_Consumo"] ?></li>
-                                <li class="list-group-item"><strong>Precio:</strong> <?= $producto["Precio"] ?> €</li>
-                                <li class="list-group-item"><strong>Observaciones:</strong>
-                                    <!--                    si está vacía imprime este mensaje-->
-                                    <?= !empty($producto["Observaciones"]) ? $producto["Observaciones"] : "Sin observaciones" ?>
-                                </li>
-                                <!--                    si está vacía imprime este mensaje-->
-                                <li class="list-group-item">
-                                    <strong>Foto:</strong>
-                                    <?= !empty($producto["Foto"]) ? "<img src='" . $producto["Foto"] . "' style='height: 250px'>" : "Sin foto" ?>
-                                </li>
-
-                            </ul>
-                        </div>
-                        <div class="card-footer text-center">
-                            <a href="catalogo.php" class="btn btn-secondary">Volver</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <!--  formulario de insercion -->
+            <!--  formulario de insercion con los datos que hay en BD-->
             <section class="mt-3">
                 <div class="container-fluid">
                     <h1 class="text-center mb-4 mt-4">Modificar los datos</h1>
@@ -240,7 +204,7 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                                     cerveza:</label>
                                 <div class="col-sm-8">
                                     <input type="text" name="denominacion" id="denominacion"
-                                           class="form-control">
+                                           class="form-control" value="<?= $producto['Denominacion_Cerveza'] ?>">
                                 </div>
                             </div>
 
@@ -249,16 +213,16 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                             <div class="mb-3 row">
                                 <label for="marca" class="col-sm-4 col-form-label fw-bold">Marca:</label>
                                 <div class="col-sm-8">
-                                    <select name="marca" id="marca" class="form-select">
-                                        <option value="default">No cambiar</option>
-                                        <option value="Heineken">Heineken</option>
-                                        <option value="Mahou">Mahou</option>
-                                        <option value="Damm">Damm</option>
-                                        <option value="Estrella Galicia">Estrella Galicia</option>
-                                        <option value="Alhambra">Alhambra</option>
-                                        <option value="Cruzcampo">Cruzcampo</option>
-                                        <option value="Artesana">Artesana</option>
+                                    <select name="marca" id="marca" class="form-select"> <!-- busca la opcion seleccionada -->
+                                        <option value="Heineken" <?= ($producto["Marca"] == "Heineken") ? "selected" : "" ?>>Heineken</option>
+                                        <option value="Mahou" <?= ($producto["Marca"] == "Mahou") ? "selected" : "" ?>>Mahou</option>
+                                        <option value="Damm" <?= ($producto["Marca"] == "Damm") ? "selected" : "" ?>>Damm</option>
+                                        <option value="Estrella Galicia" <?= ($producto["Marca"] == "Estrella Galicia") ? "selected" : "" ?>>Estrella Galicia</option>
+                                        <option value="Alhambra" <?= ($producto["Marca"] == "Alhambra") ? "selected" : "" ?>>Alhambra</option>
+                                        <option value="Cruzcampo" <?= ($producto["Marca"] == "Cruzcampo") ? "selected" : "" ?>>Cruzcampo</option>
+                                        <option value="Artesana" <?= ($producto["Marca"] == "Artesana") ? "selected" : "" ?>>Artesana</option>
                                     </select>
+
                                 </div>
                             </div>
 
@@ -267,27 +231,20 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                                 class="mb-3 d-flex flex-nowrap gap-3 justify-content-between align-items-center">
                                 <label class="fw-bold">Tipo de cerveza:</label>
                                 <div class="d-flex flex-wrap gap-3">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input type="radio" name="tipo" id="lager" value="Lager">
-                                        <label for="botellin" class="mb-0">Lager</label>
-                                    </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input type="radio" name="tipo" id="paleAle" value="Pale Ale">
-                                        <label for="botellin" class="mb-0">Pale Ale</label>
-                                    </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input type="radio" name="tipo" id="cervezaNegra" value="Cerveza Negra">
-                                        <label for="botellin" class="mb-0">Cerveza negra</label>
-                                    </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input type="radio" name="tipo" id="abadia" value="Abadía">
-                                        <label for="botellin" class="mb-0">Abadía</label>
-                                    </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input type="radio" name="tipo" id="rubia" value="Rubia">
-                                        <label for="botellin" class="mb-0">Rubia</label>
-                                    </div>
+                                    <?php
+                                    $tipos = ["Lager", "Pale Ale", "Cerveza Negra", "Abadía", "Rubia"];
+                                    foreach ($tipos as $tipo) {
+                                        $checked = ($producto["Tipo_Cerveza"] == $tipo) ? 'checked' : '';
+                                        $id = strtolower(str_replace(' ', '_', $tipo)); // Convierte "Cerveza Negra" en "cerveza_negra"
+                                        echo "
+                                            <div class='d-flex align-items-center gap-2'>
+                                            <input type='radio' name='tipo' id='$id' value='$tipo' $checked>
+                                            <label for='$id' class='mb-0'>$tipo</label>
+                                            </div>";
+                                    }
+                                    ?>
                                 </div>
+
                             </div>
 
                             <!-- formato -->
@@ -295,13 +252,17 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                                 <label for="formato" class="col-sm-4 col-form-label fw-bold">Formato:</label>
                                 <div class="col-sm-8">
                                     <select name="formato" id="formato" class="form-select">
-                                        <option value="default">No cambiar</option>
-                                        <option value="Lata">Lata</option>
-                                        <option value="Botella">Botella</option>
-                                        <option value="Pack">Pack</option>
+                                        <?php
+                                        $formatos = ["Lata", "Botella", "Pack"];
+                                        foreach ($formatos as $formato) {
+                                            $selected = ($producto["Formato"] == $formato) ? 'selected' : '';
+                                            echo "<option value='$formato' $selected>$formato</option>";
+                                        }
+                                        ?>
                                     </select>
                                 </div>
                             </div>
+
 
                             <!-- Tamaño -->
                             <div class="mb-3 row">
@@ -309,74 +270,74 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                                 <div class="col-sm-8">
                                     <select name="cantidad" id="cantidad" class="form-select">
                                         <option value="default">No cambiar</option>
-                                        <option value="Botellin">Botellín</option>
-                                        <option value="Tercio">Tercio</option>
-                                        <option value="Medio litro">Medio litro</option>
-                                        <option value="Litro">Litro</option>
+                                        <?php
+                                        $tamanos = ["Botellín", "Tercio", "Medio litro", "Litro"];
+                                        foreach ($tamanos as $tamano) {
+                                            $selected = ($producto["Cantidad"] == $tamano) ? 'selected' : '';
+                                            echo "<option value='$tamano' $selected>$tamano</option>";
+                                        }
+                                        ?>
                                     </select>
                                 </div>
                             </div>
+
 
                             <!-- Alergenos -->
                             <div class="mb-3 d-flex flex-nowrap gap-3 justify-content-between">
                                 <label class="fw-bold">Alérgenos:</label>
                                 <div class="d-flex flex-wrap gap-3">
-                                    <div class="form-check">
-                                        <input type="checkbox" name="alergenos[]" id="gluten" value="gluten"
-                                               class="form-check-input">
-                                        <label for="gluten" class="form-check-label">Gluten</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input type="checkbox" name="alergenos[]" id="huevo" value="huevo"
-                                               class="form-check-input">
-                                        <label for="huevo" class="form-check-label">Huevo</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input type="checkbox" name="alergenos[]" id="cacahuete"
-                                               value="cacahuete" class="form-check-input">
-                                        <label for="cacahuete" class="form-check-label">Cacahuete</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input type="checkbox" name="alergenos[]" id="soja" value="soja"
-                                               class="form-check-input">
-                                        <label for="soja" class="form-check-label">Soja</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input type="checkbox" name="alergenos[]" id="lacteo" value="lacteo"
-                                               class="form-check-input">
-                                        <label for="lacteo" class="form-check-label">Lácteo</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input type="checkbox" name="alergenos[]" id="sulfitos" value="sulfitos"
-                                               class="form-check-input">
-                                        <label for="sulfitos" class="form-check-label">Sulfitos</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input type="checkbox" name="alergenos[]" id="sinAlergenos"
-                                               value="sinAlergenos" class="form-check-input">
-                                        <label for="sinAlergenos" class="form-check-label">Sin alérgenos</label>
-                                    </div>
+                                    <?php
+                                    $alergenos = [
+                                        "gluten" => "Gluten",
+                                        "huevo" => "Huevo",
+                                        "cacahuete" => "Cacahuete",
+                                        "soja" => "Soja",
+                                        "lacteo" => "Lácteo",
+                                        "sulfitos" => "Sulfitos",
+                                        "sinAlergenos" => "Sin alérgenos"
+                                    ];
 
+                                    // Obtener los alérgenos seleccionados desde la base de datos
+                                    $alergenosSeleccionados = explode(',', $producto["Alergias"]);
+
+                                    foreach ($alergenos as $valor => $etiqueta) {
+                                        $checked = in_array($valor, $alergenosSeleccionados) ? 'checked' : '';
+                                        echo "
+                                            <div class='form-check'>
+                                                <input type='checkbox' name='alergenos[]' id='$valor' value='$valor' class='form-check-input' $checked>
+                                                <label for='$valor' class='form-check-label'>$etiqueta</label>
+                                            </div>";
+                                    }
+                                    ?>
                                 </div>
                             </div>
+
 
 
                             <!-- Fecha -->
                             <div class="mb-3 row">
-                                <label for="fecha" class="col-sm-4 col-form-label fw-bold">Fecha de Consumo
-                                    Preferente:</label>
+                                <label for="fecha" class="col-sm-4 col-form-label fw-bold">Fecha de Consumo Preferente:</label>
                                 <div class="col-sm-8">
-                                    <input type="date" name="fecha" id="fecha" class="form-control">
+                                    <input type="date" name="fecha" id="fecha" class="form-control" value="<?php echo $producto['Fecha_Consumo']; ?>">
                                 </div>
                             </div>
 
+                            <!-- Foto actual -->
+                            <div class="mb-3 row">
+                                <p class="col-sm-4 col-form-label fw-bold">Foto de la
+                                    cerveza actual:</p>
+                                <div class="col-sm-8">
+                                    <?= !empty($producto["Foto"]) ? "<img src='" . $producto["Foto"] . "' style='height: 250px; width: 200px'>" : "Sin foto" ?>
+                                </div>
+                            </div>
+                                
 
 
 
                             <!-- Foto -->
                             <div class="mb-3 row">
-                                <label for="foto" class="col-sm-4 col-form-label fw-bold">Foto de la
-                                    cerveza:</label>
+                                
+                                <label for="foto" class="col-sm-4 col-form-label fw-bold">Cambiar foto:</label>
                                 <div class="col-sm-8">
                                     <input type="file" name="foto" id="foto" class="form-control">
                                 </div>
@@ -392,30 +353,32 @@ $producto_id = $_SESSION["producto_id"] ?? '';
                                 <label for="precio" class="col-sm-4 col-form-label fw-bold">Precio:</label>
                                 <div class="col-sm-7 d-flex flex-nowrap gap-2 align-items-center">
                                     <!--sería más correcto usar type=number pero se ha hecho así para poner un validador de números-->
-                                    <input type="text" name="precio" id="precio" class="form-control">
+                                    <input type="text" name="precio" id="precio" class="form-control" value="<?=
+                                    $producto['Precio']?>">
                                     <span>€</span>
-                                </div>
-                            </div>
-                            <?php
-                            if (isset($_POST["submit"]) && $precioMal) {
-                                echo "<div class= 'text-danger'>El precio debe ser un número y ser mayor que cero. Se admiten decimales.</div>";
-                            }
-                            ?>
+                                    </div>
+                                    </div>
+                                    <?php
+                                    if (isset($_POST["submit"]) && $precioMal) {
+                                        echo "<div class= 'text-danger'>El precio debe ser un número y ser mayor que cero. Se admiten decimales.</div>";
+                                    }
+                                    ?>
 
-                            <!-- Observaciones -->
-                            <div class="mb-3 row">
-                                <label for="observaciones"
-                                       class="col-sm-4 col-form-label fw-bold">Observaciones:</label>
-                                <div class="col-sm-8">
-                                    <textarea name="observaciones" id="observaciones"
-                                              class="form-control"></textarea>
-                                </div>
-                            </div>
+                                           <!-- Observaciones -->
+                                           <div class="mb-3 row">
+                                    <label for="observaciones"
+                                           class="col-sm-4 col-form-label fw-bold">Observaciones:</label>
+                                    <div class="col-sm-8">
+                                        <textarea name="observaciones" id="observaciones" class="form-control"><?php echo $producto['Observaciones']; ?></textarea>
 
-                            <!-- Botón de envío -->
-                            <div class="text-center">
-                                <input type="submit" class="btn btn-primary" name="submit" value="Modificar">
-                            </div>
+                                    </div>
+                                </div>
+
+                                <!-- Botón de envío -->
+                                <div class="text-center">
+                                    <input type="submit" class="btn btn-primary" name="submit" value="Modificar">
+                                    <a href="catalogo.php" class="btn btn-secondary">Volver</a>
+                                </div>
                         </fieldset>
                     </form>
                 </div>

@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'funciones.php';
 //si no está iniciada la sesión, te obliga a iniciar sesión
 if (!isset($_SESSION['user'])) {
     header("Location:index.php");
@@ -198,15 +199,15 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                                             <div class="d-flex flex-wrap gap-3">
                                                 <div class="d-flex align-items-center gap-2">
                                                     <input type="radio" name="tipo" id="lager" value="Lager">
-                                                    <label for="botellin" class="mb-0">Lager</label>
+                                                    <label for="lager" class="mb-0">Lager</label>
                                                 </div>
                                                 <div class="d-flex align-items-center gap-2">
                                                     <input type="radio" name="tipo" id="paleAle" value="Pale Ale">
-                                                    <label for="botellin" class="mb-0">Pale Ale</label>
+                                                    <label for="paleAle" class="mb-0">Pale Ale</label>
                                                 </div>
                                                 <div class="d-flex align-items-center gap-2">
                                                     <input type="radio" name="tipo" id="cervezaNegra" value="Cerveza Negra">
-                                                    <label for="botellin" class="mb-0">Cerveza negra</label>
+                                                    <label for="cervezaNegra" class="mb-0">Cerveza negra</label>
                                                 </div>
                                                 <div class="d-flex align-items-center gap-2">
                                                     <input type="radio" name="tipo" id="abadia" value="Abadía">
@@ -214,7 +215,7 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                                                 </div>
                                                 <div class="d-flex align-items-center gap-2">
                                                     <input type="radio" name="tipo" id="rubia" value="Rubia">
-                                                    <label for="botellin" class="mb-0">Rubia</label>
+                                                    <label for="abadia" class="mb-0">Rubia</label>
                                                 </div>
                                             </div>
                                         </div>
