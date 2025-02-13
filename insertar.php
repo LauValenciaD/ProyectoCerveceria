@@ -31,12 +31,7 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
         <?php
 
         //VERIFICAR QUE EL NETBEANS TENGA LA URL DEL PROYECTO CORRECTA PARA QUE FUNCIONE Y QUE EL PUERTO DE LA BD ESTE BIEN
-        function comprobarNombre($dato) {
-            $dato = trim($dato);
-            $dato = stripslashes($dato);
-            $dato = htmlspecialchars($dato);
-            return $dato;
-        }
+      
 
         if (isset($_POST["submit"])) {
             $denominacion = comprobarNombre($_POST["denominacion"]);

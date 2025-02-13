@@ -36,3 +36,9 @@ if (isset($_POST['btnbuscar'])) {
 
     $_SESSION['encontrados'] = $productosBuscar;
 }
+  function comprobarNombre($dato) {
+            $dato = trim($dato);
+            $dato = stripslashes($dato);
+            $dato = htmlspecialchars($dato);
+            return $dato;
+        }
