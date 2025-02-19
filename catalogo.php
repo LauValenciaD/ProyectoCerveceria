@@ -19,7 +19,7 @@ require_once 'funciones.php';
 
     <body>
         <?php
-        //este codigo se lanza cuando se pulse el boton de modificar o borrar
+        // Codigo de botones modificar, borrar, ver detalles y carrito
         if (isset($_POST["modificar"])) {
             $_SESSION["producto_id"] = $_POST["producto_id"];
             header("Location:modificar_prod.php");
@@ -74,10 +74,10 @@ require_once 'funciones.php';
                         </thead>
                         <tbody>
                             <?php
-                            $peticion = mysqli_prepare($con, "SELECT * FROM productos");
+                            $peticion = mysqli_prepare($con, "SELECT * FROM productos"); // Buscar todos los artículos 
                             mysqli_stmt_execute($peticion);
                             $resultado = mysqli_stmt_get_result($peticion);
-                            $productos = mysqli_fetch_all($resultado, MYSQLI_ASSOC); //guardar todos los productos
+                            $productos = mysqli_fetch_all($resultado, MYSQLI_ASSOC); // Guardar todos los productos en el array assoc
                             //añadir los productos a la tabla
                             foreach ($productos as $producto) {
                                 echo "<tr scope='row'>";
@@ -93,7 +93,7 @@ require_once 'funciones.php';
                                     echo "<td>Sin foto</td>";
                                 }
 
-                                // Botones para modificar y borrar
+                                // Botones para ver, modificar y borrar del admin
                                 if ($root=== true) {
                                     echo "<td colspan='3'>";
                                     echo "<form method='POST' action='catalogo.php'>";
@@ -107,7 +107,7 @@ require_once 'funciones.php';
                                     echo "</form>";
                                     echo "</td>";
                                     echo "</tr>";
-                                }
+                                } // Botones para ver y carrito del usuario
                                 if ($root=== false) {
                                     echo "<td colspan='2'>";
                                     echo "<form method='POST' action='catalogo.php'>";

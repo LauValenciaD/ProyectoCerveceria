@@ -74,14 +74,14 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                 $errores = true;
             }
 
-            if (empty($precio) || !is_numeric($precio) || $precio <= 0) {
+            if (empty($precio) || !is_numeric($precio) || $precio <= 0) { //Si el precio no es numero o es menor o igual a 0 
                 $precioMal = true;
                 $errores = true;
             }
             if (isset($_FILES["foto"]) && $_FILES["foto"]["error"] === UPLOAD_ERR_OK) {
                 // Si se ha subido una foto correctamente
-                $rutaFoto = comprobarImg($mensaje);
-                if ($mensaje != "") {
+                $rutaFoto = comprobarImg($mensaje); //funcion que comprueba los errores de la foto
+                if ($mensaje != "") { //la funcion devuelve un mensaje de error si lo hay
                     $errores = true;
                     $errorFoto = true;
                 }
@@ -91,7 +91,7 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
             }
 
 
-            // Si no hay errores, procesa e inserta la cerveza
+            // Si no hay errores, guarda las variables en un sesion para insertar en el procesar.php
             if (!$errores) {
                 $_SESSION["denominacion"] = $denominacion;
                 $_SESSION["marca"] = $marca;
@@ -108,8 +108,8 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                 exit;
             }
         }
-
-        function comprobarImg(&$mensaje) {
+        //Funcion que comprueba la foto
+        function comprobarImg(&$mensaje) { //pasa la variable por valor
             // Verificar si hay errores en la subida del archivo
             $errors = $_FILES['foto']['error'];
             $mensaje = "";
@@ -153,7 +153,7 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                             <div class="container my-4">
                                 <h1 class="text-center mb-4">Añadir nueva cerveza</h1>
                                 <p class="text-center">Introduzca los datos de la cerveza</p>
-                                <form action="insertar.php" method="post" enctype="multipart/form-data">
+                                <form action="insertar.php" method="post" enctype="multipart/form-data"> 
                                     <fieldset>
 
                                         <!-- Denominacion -->
@@ -165,7 +165,8 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                                                        class="form-control">
                                             </div>
                                         </div>
-                                        <?php
+                                        <?php 
+                                        //Imprime errores si los hay
                                         if (isset($_POST["submit"]) && $errores && empty($denominacion)) {
                                             echo "<div class= 'text-danger'>El nombre no puede estar vacío</div>";
                                         }
@@ -215,6 +216,7 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                                             </div>
                                         </div>
                                         <?php
+                                        //Imprime errores si los hay
                                         if (isset($_POST["submit"]) && $errores && !isset($_POST["tipo"])) {
                                             echo "<div class= 'text-danger'>El tipo no puede estar vacío</div>";
                                         }
@@ -288,6 +290,7 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                                             </div>
                                         </div>
                                         <?php
+                                        //Imprime errores si los hay
                                         if (isset($_POST["submit"]) && $errores && !isset($_REQUEST["alergenos"])) {
                                             echo "<div class= 'text-danger'>Debes marcar los alérgenos</div>";
                                         }
@@ -303,6 +306,7 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                                             </div>
                                         </div>
                                         <?php
+                                        //Imprime errores si los hay
                                         if (isset($_POST["submit"]) && $errores && empty($fecha)) {
                                             echo "<div class= 'text-danger'>Debes elegir la fecha</div>";
                                         }
@@ -320,6 +324,7 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                                             </div>
                                         </div>
                                         <?php
+                                        //Imprime errores si los hay
                                         if (isset($_POST["submit"]) && $errorFoto) {
                                             echo $mensaje;
                                         }
@@ -335,6 +340,7 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
                                             </div>
                                         </div>
                                         <?php
+                                        //Imprime errores si los hay
                                         if (isset($_POST["submit"]) && $precioMal) {
                                             echo "<div class= 'text-danger'>El precio debe ser un número y ser mayor que cero. Se admiten decimales.</div>";
                                         }

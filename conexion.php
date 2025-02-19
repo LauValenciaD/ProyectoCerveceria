@@ -2,7 +2,7 @@
 <?php 
 // datos para la conexion a MySQL
 
-define('DB_SERVER', 'localhost:3310'); //CUIDADO CON EL PUERTO, CAMBIAR AL DEL MySQL
+define('DB_SERVER', 'localhost:3307'); //CUIDADO CON EL PUERTO, CAMBIAR AL DEL MySQL CORRESPONDIENTE
 
 define('DB_NAME', 'cervecerialaura'); 
 define('DB_USER', 'root'); 

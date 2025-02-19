@@ -1,5 +1,5 @@
 <?php
-
+//Incluido en todos las páginas
 require_once "conexion.php";
 require_once "funcion_carrito.php";
 //si no está iniciada la sesión, te obliga a iniciar sesión
@@ -8,18 +8,21 @@ if (!isset($_SESSION['user'])) {
 }
 $user = $_SESSION['user'];
 $_SESSION['root'] = false;
+// Verifica si es admin para mostrar ciertas funciones
 if ($user == "root") {
     $_SESSION['root'] = true;
 }
 $root = $_SESSION['root'];
+
+// Si es usuario prepara el carrito y cuenta los articulos
 if (isset($_SESSION["usuario_id"]) && $root === false) {
     inicializarCarrito($_SESSION["usuario_id"], $con);
     $carrito_id = $_SESSION['carrito_id'];
     $_SESSION["cantidad_prod"] = contarArticulos($carrito_id, $con);
 }
-//la busqueda de la barra de busqueda
+// La busqueda de la barra de busqueda (no es la busqueda avanzada)
 if (isset($_POST['btnbuscar'])) {
-    $buscar =  $_POST['txtbuscar'];
+    $buscar = $_POST['txtbuscar'];
 
     $query = "
         SELECT *
@@ -34,11 +37,13 @@ if (isset($_POST['btnbuscar'])) {
     $resultado = mysqli_query($con, $query);
     $productosBuscar = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
 
-    $_SESSION['encontrados'] = $productosBuscar;
+    $_SESSION['encontrados'] = $productosBuscar; // Lo guarda en una sesion para mostrarlo en la pagina de busqueda avanzada 
 }
-  function comprobarNombre($dato) {
-            $dato = trim($dato);
-            $dato = stripslashes($dato);
-            $dato = htmlspecialchars($dato);
-            return $dato;
-        }
+// Verificar los campos tipo string
+function comprobarNombre($dato)
+{
+    $dato = trim($dato);
+    $dato = stripslashes($dato);
+    $dato = htmlspecialchars($dato);
+    return $dato;
+}
