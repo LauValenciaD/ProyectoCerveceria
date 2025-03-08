@@ -1,4 +1,5 @@
 <?php
+    ob_start(); 
     session_start();
     require_once "conexion.php";
 
@@ -54,6 +55,7 @@
             }
         }
     }
+    ob_end_flush();
     ?>
 <!DOCTYPE html>
 <html lang="es">
