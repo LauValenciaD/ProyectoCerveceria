@@ -1,8 +1,27 @@
 <?php
+ob_start(); 
 session_start();
 require_once "funciones.php";
 // Recuperar las variables de sesión
 $producto_id = $_SESSION["producto_id"] ?? '';
+
+    //mostrar datos del producto
+    $sql = "SELECT * FROM productos WHERE ID_PRODUCTO = ?"; // Busca el producto con el id del sesion
+    $sentencia = mysqli_prepare($con, $sql);
+    mysqli_stmt_bind_param($sentencia, "s", $producto_id);
+    mysqli_stmt_execute($sentencia);
+    $result = mysqli_stmt_get_result($sentencia);
+    $producto = mysqli_fetch_assoc($result);
+
+    mysqli_stmt_close($sentencia); // Cierra
+    
+    if (isset($_POST["carrito"])) {
+        $cantidad = $_POST["unidades"];
+        // Llamar a la función para agregar el producto al carrito
+        agregarAlCarrito($carrito_id, $_POST["producto_id"], $cantidad, $con);
+        $_SESSION["cantidad_prod"] = contarArticulos($carrito_id, $con);
+    }
+    ob_end_flush();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -21,24 +40,6 @@ $producto_id = $_SESSION["producto_id"] ?? '';
 </head>
 
 <body>
-    <?php
-    //mostrar datos del producto
-    $sql = "SELECT * FROM productos WHERE ID_PRODUCTO = ?"; // Busca el producto con el id del sesion
-    $sentencia = mysqli_prepare($con, $sql);
-    mysqli_stmt_bind_param($sentencia, "s", $producto_id);
-    mysqli_stmt_execute($sentencia);
-    $result = mysqli_stmt_get_result($sentencia);
-    $producto = mysqli_fetch_assoc($result);
-
-    mysqli_stmt_close($sentencia); // Cierra
-    
-    if (isset($_POST["carrito"])) {
-        $cantidad = $_POST["unidades"];
-        // Llamar a la función para agregar el producto al carrito
-        agregarAlCarrito($carrito_id, $_POST["producto_id"], $cantidad, $con);
-        $_SESSION["cantidad_prod"] = contarArticulos($carrito_id, $con);
-    }
-    ?>
     <?php include_once 'header.php' ?> <!-- el header -->
     <main>
         <section>

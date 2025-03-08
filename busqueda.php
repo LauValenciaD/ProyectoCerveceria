@@ -1,4 +1,5 @@
 <?php
+ob_start(); 
 session_start();
 require_once 'funciones.php';
 
@@ -81,6 +82,7 @@ if (isset($_POST["submit"])) {
     // Cerrar la conexión
     $con->close();
 }
+ob_end_flush();
 ?>
 <!DOCTYPE html>
 <html lang="es">

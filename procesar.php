@@ -1,4 +1,5 @@
 <?php
+ob_start(); 
 session_start();
 require_once 'funciones.php';
 $user = $_SESSION['user'];
@@ -15,24 +16,8 @@ $alergenos = $_SESSION["alergenos"] ?? [];
 $fecha = $_SESSION["fecha"] ?? '';
 $precio = $_SESSION["precio"] ?? '';
 $observaciones = $_SESSION["observaciones"] ?? '';
-$rutaFoto = $_SESSION["rutaFoto"] ?? ''
-    ?>
-<!DOCTYPE html>
-<html lang="es">
+$rutaFoto = $_SESSION["rutaFoto"] ?? '';
 
-<head>
-    <meta charset="UTF-8" />
-    <link rel="shortcut icon" type="image/x-icon" href="assets/img/beer-logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="assets/css/bootstrap.css" />
-    <link rel="stylesheet" href="assets/css/style.css" />
-    <link rel="stylesheet" href="assets/css/fontawesome.min.css" />
-    <!-- Hecho por Laura Valencia Díaz -->
-    <title>Cervecería - Laura Valencia</title>
-</head>
-
-<body>
-    <?php
     // Insertar datos en la BD
     // Convertir a string
     $stringAlergenos = implode(", ", $alergenos);
@@ -56,7 +41,23 @@ $rutaFoto = $_SESSION["rutaFoto"] ?? ''
 
     // Cierra la consulta
     mysqli_stmt_close($sentencia);
+    ob_end_flush();
     ?>
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/beer-logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="assets/css/bootstrap.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/fontawesome.min.css" />
+    <!-- Hecho por Laura Valencia Díaz -->
+    <title>Cervecería - Laura Valencia</title>
+</head>
+
+<body>
     <?php include_once 'header.php' ?> <!-- el header -->
     <main>
         <section>

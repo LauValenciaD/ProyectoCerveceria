@@ -1,24 +1,7 @@
 <?php
+ob_start(); 
 session_start();
 require_once 'funciones.php';
-?>
-<!DOCTYPE html>
-<html lang="es">
-
-    <head>
-        <meta charset="UTF-8" />
-        <link rel="shortcut icon" type="image/x-icon" href="assets/img/beer-logo.png" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="assets/css/bootstrap.css" />
-        <link rel="stylesheet" href="assets/css/style.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-        <!-- Hecho por Laura Valencia Díaz -->
-        <title>Cervecería - Laura Valencia</title>
-    </head>
-
-    <body>
-        <?php
         // Codigo de botones modificar, borrar, ver detalles y carrito
         if (isset($_POST["modificar"])) {
             $_SESSION["producto_id"] = $_POST["producto_id"];
@@ -42,7 +25,25 @@ require_once 'funciones.php';
             agregarAlCarrito($carrito_id, $_POST["producto_id"], $cantidad, $con);
             $_SESSION["cantidad_prod"] = contarArticulos($carrito_id, $con);
         }
-        ?>
+        ob_end_flush();
+?>
+<!DOCTYPE html>
+<html lang="es">
+
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="shortcut icon" type="image/x-icon" href="assets/img/beer-logo.png" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="assets/css/bootstrap.css" />
+        <link rel="stylesheet" href="assets/css/style.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+        <!-- Hecho por Laura Valencia Díaz -->
+        <title>Cervecería - Laura Valencia</title>
+    </head>
+
+    <body>
+
         <?php include_once 'header.php' ?> <!-- el header -->
 
         <main>

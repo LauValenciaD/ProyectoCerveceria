@@ -1,4 +1,5 @@
 <?php
+ob_start(); 
 session_start();
 require_once 'funciones.php';
 
@@ -9,6 +10,156 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
 }
 // Recuperar las variables de sesión
 $producto_id = $_SESSION["producto_id"] ?? '';
+
+$sql = "SELECT * FROM productos WHERE ID_PRODUCTO = ?"; // Recuperar datos del producto según si id de sesion
+$sentencia = mysqli_prepare($con, $sql);
+mysqli_stmt_bind_param($sentencia, "s", $producto_id);
+mysqli_stmt_execute($sentencia);
+$result = mysqli_stmt_get_result($sentencia);
+$producto = mysqli_fetch_assoc($result);
+
+mysqli_stmt_close($sentencia);
+
+//comprobar que este bien la foto
+function comprobarImg(&$mensaje)
+{
+    // Verificar si hay errores en la subida del archivo
+    $errors = $_FILES['foto']['error'];
+    $mensaje = "";
+    if ($errors !== UPLOAD_ERR_OK) {
+        $mensaje = "<div class='text-danger'><strong> Hay un error en la imagen. </strong> El error es $errors .</div>";
+    } else { // Obtener información del archivo
+        $nombre = $_FILES['foto']['name'];
+        $tamanio = $_FILES['foto']['size'];
+        $tipo = $_FILES['foto']['type'];
+        $origen = $_FILES['foto']['tmp_name'];
+
+        if ($tamanio > 4000000) { // Verificar tamaño
+            $mensaje = "<div class='text-danger'>La imagen es demasiado grande. Máximo 4 MB.</div>";
+        } elseif ($tipo !== "image/jpeg" && $tipo !== "image/png") { // Verificar tipo de archivo
+            $mensaje = "<div class='text-danger'>La imagen debe ser jpg o png. Tipo de archivo: $tipo </div>";
+        } else {
+
+            $destino = "archivos/" . $nombre;  // Ruta relativa a la carpeta "archivos"
+            // Mover el archivo a la ruta de destino
+            if (move_uploaded_file($origen, $destino)) {
+
+                return $destino; //devolvemos la ruta
+            } else {
+                $mensaje = "<div class='text-danger'>Error al mover el archivo a la carpeta de destino.</div>";
+            }
+        }
+    }
+}
+
+if (isset($_POST["submit"])) {
+    $denominacion = comprobarNombre($_POST["denominacion"]);
+    $marca = $_POST["marca"];
+    $fecha = $_POST["fecha"];
+    $precio = $_POST["precio"];
+    $formato = $_POST["formato"];
+    $cantidad = $_POST["cantidad"];
+
+    $tipo = "";
+    $rutaFotoNueva = null;
+    $rutaFoto = $producto["Foto"];
+    $observaciones = comprobarNombre($_POST["observaciones"]);
+
+    $precioMal = false;
+    $mensaje = "";
+    $errorFoto = false;
+
+    // Validaciones
+    if (empty($denominacion)) {
+        $denominacion = $producto["Denominacion_Cerveza"];
+    }
+
+    if (!isset($_POST["tipo"])) {
+        $tipo = $producto["Tipo_Cerveza"];
+    } else {
+        $tipo = $_POST["tipo"];
+    }
+    if ($marca == "default") {
+        $marca = $producto["Marca"];
+    }
+    if ($formato == "default") {
+        $formato = $producto["Formato"];
+    }
+    if ($cantidad == "default") {
+        $cantidad = $producto["Cantidad"];
+    }
+
+    if (!isset($_POST["alergenos"])) {
+        $alergenos = $producto["Alergias"];
+    }
+    if (isset($_POST['alergenos'])) {
+        // Verificamos si es un array
+        if (is_array($_POST['alergenos'])) {
+            $alergenos = $_POST['alergenos'];
+        } else {
+            // Si solo hay una opción seleccionada, convertirla en un array
+            $alergenos = $_POST['alergenos[]'];
+        }
+        $stringAlergenos = implode(", ", $alergenos);
+    }
+    if (empty($fecha)) {
+        $fecha = $producto["Fecha_Consumo"];
+    }
+
+    if (empty($precio)) {
+        $precio = $producto["Precio"];
+    } elseif (!is_numeric($precio) || $precio <= 0) {
+        $precioMal = true;
+    }
+    if (isset($_FILES["foto"]) && $_FILES["foto"]["error"] === UPLOAD_ERR_OK) {
+        // Si se ha subido una foto correctamente
+        $rutaFotoNueva = comprobarImg($mensaje);
+        //si hay error devuelve un mensaje
+        if ($mensaje != "") {
+            $errorFoto = true;
+        }
+    } elseif (!isset($_FILES["foto"]) || $_FILES["foto"]["error"] !== UPLOAD_ERR_OK) {
+        // Si no se ha subido ninguna foto o hubo un error en la subida
+        $rutaFoto = $producto["Foto"];
+    }
+
+
+    // Si no hay errores, procesa y hace el update de la cerveza
+    if (!$errorFoto && !$precioMal) {
+        if ($rutaFotoNueva !== null) { // Si hay una nueva imagen
+            if (file_exists($producto["Foto"])) { // Si la antigua existe
+                unlink($producto["Foto"]); // Se borra la imagen antigua
+            }
+            $rutaFoto = $rutaFotoNueva; // Se actualiza la ruta con la nueva imagen
+        }
+
+
+        $actualizacion = mysqli_prepare($con, "UPDATE productos
+                                    SET Denominacion_Cerveza = ?,
+                                        Marca = ?,
+                                        Tipo_Cerveza = ?,
+                                        Formato = ?,
+                                        Cantidad = ?,
+                                        Alergias = ?,
+                                        Fecha_Consumo = ?,
+                                        Foto = ?,
+                                        Precio = ?,
+                                        Observaciones = ?
+                                    WHERE ID_PRODUCTO = ?");
+        if ($actualizacion) {
+            // Vincular los parámetros para la consulta preparada
+            mysqli_stmt_bind_param($actualizacion, 'ssssssssssi', $denominacion, $marca, $tipo, $formato, $cantidad, $stringAlergenos, $fecha, $rutaFoto, $precio, $observaciones, $producto_id);
+            // Ejecutar la consulta
+            if (mysqli_stmt_execute($actualizacion)) {
+                header("Location: modificar_prod.php"); //Recarga la página para que se vean los cambios
+                exit();
+            } else {
+                die("Error en la ejecución del UPDATE: " . mysqli_error($con));
+            }
+        }
+    }
+}
+ob_end_flush();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -27,158 +178,7 @@ $producto_id = $_SESSION["producto_id"] ?? '';
 </head>
 
 <body>
-    <?php
-
-    $sql = "SELECT * FROM productos WHERE ID_PRODUCTO = ?"; // Recuperar datos del producto según si id de sesion
-    $sentencia = mysqli_prepare($con, $sql);
-    mysqli_stmt_bind_param($sentencia, "s", $producto_id);
-    mysqli_stmt_execute($sentencia);
-    $result = mysqli_stmt_get_result($sentencia);
-    $producto = mysqli_fetch_assoc($result);
-
-    mysqli_stmt_close($sentencia);
-
-    //comprobar que este bien la foto
-    function comprobarImg(&$mensaje)
-    {
-        // Verificar si hay errores en la subida del archivo
-        $errors = $_FILES['foto']['error'];
-        $mensaje = "";
-        if ($errors !== UPLOAD_ERR_OK) {
-            $mensaje = "<div class='text-danger'><strong> Hay un error en la imagen. </strong> El error es $errors .</div>";
-        } else { // Obtener información del archivo
-            $nombre = $_FILES['foto']['name'];
-            $tamanio = $_FILES['foto']['size'];
-            $tipo = $_FILES['foto']['type'];
-            $origen = $_FILES['foto']['tmp_name'];
-
-            if ($tamanio > 4000000) { // Verificar tamaño
-                $mensaje = "<div class='text-danger'>La imagen es demasiado grande. Máximo 4 MB.</div>";
-            } elseif ($tipo !== "image/jpeg" && $tipo !== "image/png") { // Verificar tipo de archivo
-                $mensaje = "<div class='text-danger'>La imagen debe ser jpg o png. Tipo de archivo: $tipo </div>";
-            } else {
-
-                $destino = "archivos/" . $nombre;  // Ruta relativa a la carpeta "archivos"
-                // Mover el archivo a la ruta de destino
-                if (move_uploaded_file($origen, $destino)) {
-
-                    return $destino; //devolvemos la ruta
-                } else {
-                    $mensaje = "<div class='text-danger'>Error al mover el archivo a la carpeta de destino.</div>";
-                }
-            }
-        }
-    }
-
-    if (isset($_POST["submit"])) {
-        $denominacion = comprobarNombre($_POST["denominacion"]);
-        $marca = $_POST["marca"];
-        $fecha = $_POST["fecha"];
-        $precio = $_POST["precio"];
-        $formato = $_POST["formato"];
-        $cantidad = $_POST["cantidad"];
-
-        $tipo = "";
-        $rutaFotoNueva = null;
-        $rutaFoto = $producto["Foto"];
-        $observaciones = comprobarNombre($_POST["observaciones"]);
-
-        $precioMal = false;
-        $mensaje = "";
-        $errorFoto = false;
-
-        // Validaciones
-        if (empty($denominacion)) {
-            $denominacion = $producto["Denominacion_Cerveza"];
-        }
-
-        if (!isset($_POST["tipo"])) {
-            $tipo = $producto["Tipo_Cerveza"];
-        } else {
-            $tipo = $_POST["tipo"];
-        }
-        if ($marca == "default") {
-            $marca = $producto["Marca"];
-        }
-        if ($formato == "default") {
-            $formato = $producto["Formato"];
-        }
-        if ($cantidad == "default") {
-            $cantidad = $producto["Cantidad"];
-        }
-
-        if (!isset($_POST["alergenos"])) {
-            $alergenos = $producto["Alergias"];
-        }
-        if (isset($_POST['alergenos'])) {
-            // Verificamos si es un array
-            if (is_array($_POST['alergenos'])) {
-                $alergenos = $_POST['alergenos'];
-            } else {
-                // Si solo hay una opción seleccionada, convertirla en un array
-                $alergenos = $_POST['alergenos[]'];
-            }
-            $stringAlergenos = implode(", ", $alergenos);
-        }
-        if (empty($fecha)) {
-            $fecha = $producto["Fecha_Consumo"];
-        }
-
-        if (empty($precio)) {
-            $precio = $producto["Precio"];
-        } elseif (!is_numeric($precio) || $precio <= 0) {
-            $precioMal = true;
-        }
-        if (isset($_FILES["foto"]) && $_FILES["foto"]["error"] === UPLOAD_ERR_OK) {
-            // Si se ha subido una foto correctamente
-            $rutaFotoNueva = comprobarImg($mensaje);
-            //si hay error devuelve un mensaje
-            if ($mensaje != "") {
-                $errorFoto = true;
-            }
-        } elseif (!isset($_FILES["foto"]) || $_FILES["foto"]["error"] !== UPLOAD_ERR_OK) {
-            // Si no se ha subido ninguna foto o hubo un error en la subida
-            $rutaFoto = $producto["Foto"];
-        }
-
-
-        // Si no hay errores, procesa y hace el update de la cerveza
-        if (!$errorFoto && !$precioMal) {
-            if ($rutaFotoNueva !== null) { // Si hay una nueva imagen
-                if (file_exists($producto["Foto"])) { // Si la antigua existe
-                    unlink($producto["Foto"]); // Se borra la imagen antigua
-                }
-                $rutaFoto = $rutaFotoNueva; // Se actualiza la ruta con la nueva imagen
-            }
-
-
-            $actualizacion = mysqli_prepare($con, "UPDATE productos
-                                        SET Denominacion_Cerveza = ?,
-                                            Marca = ?,
-                                            Tipo_Cerveza = ?,
-                                            Formato = ?,
-                                            Cantidad = ?,
-                                            Alergias = ?,
-                                            Fecha_Consumo = ?,
-                                            Foto = ?,
-                                            Precio = ?,
-                                            Observaciones = ?
-                                        WHERE ID_PRODUCTO = ?");
-            if ($actualizacion) {
-                // Vincular los parámetros para la consulta preparada
-                mysqli_stmt_bind_param($actualizacion, 'ssssssssssi', $denominacion, $marca, $tipo, $formato, $cantidad, $stringAlergenos, $fecha, $rutaFoto, $precio, $observaciones, $producto_id);
-                // Ejecutar la consulta
-                if (mysqli_stmt_execute($actualizacion)) {
-                    header("Location: modificar_prod.php"); //Recarga la página para que se vean los cambios
-                    exit();
-                } else {
-                    die("Error en la ejecución del UPDATE: " . mysqli_error($con));
-                }
-            }
-        }
-    }
-    ?>
-    <?php include_once 'header.php' ?> <!-- el header -->
+<?php include_once 'header.php' ?> <!-- el header -->
     <main>
         <!--  formulario de insercion con los datos que ya hay en la BD-->
         <section class="mt-3">

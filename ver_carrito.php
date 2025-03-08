@@ -1,6 +1,15 @@
 <?php
+ob_start(); 
 session_start();
 require_once "funciones.php";
+
+    // Si quiere quitar un producto del carrito
+    if (isset($_POST["quitar"])) {
+        borrarDelCarrito($carrito_id, $_POST["producto_id"], $con);
+        $_SESSION["cantidad_prod"] = contarArticulos($carrito_id, $con); //Recalcula la cantidad de productos del icono
+    }
+    $productos = mostrarCarrito($con);
+    ob_end_flush();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -20,20 +29,12 @@ require_once "funciones.php";
 </head>
 
 <body>
-    <?php
-    // Si quiere quitar un producto del carrito
-    if (isset($_POST["quitar"])) {
-        borrarDelCarrito($carrito_id, $_POST["producto_id"], $con);
-        $_SESSION["cantidad_prod"] = contarArticulos($carrito_id, $con); //Recalcula la cantidad de productos del icono
-    }
-    ?>
     <?php include_once 'header.php' ?> <!-- el header -->
     <main>
         <section class="container my-4">
             <h2>Tu Carrito</h2>
 
             <?php
-            $productos = mostrarCarrito($con);
             if (empty($productos)) {
                 echo "<p>El carrito está vacío.</p>";
             } else {

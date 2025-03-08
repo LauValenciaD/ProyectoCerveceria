@@ -1,7 +1,9 @@
 <?php
+ob_start(); 
 session_start();
 require_once "funciones.php";
-
+$productos = mostrarCarrito($con); 
+ob_end_flush();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -27,7 +29,7 @@ require_once "funciones.php";
             <h2>Tu ticket de la compra</h2>
 
             <?php
-            $productos = mostrarCarrito($con); //Muestra los artículos del carrito
+    //Muestra los artículos del carrito
             
             if (empty($productos)) {
                 echo "<p>No hay artículos.</p>";

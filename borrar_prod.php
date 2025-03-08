@@ -1,4 +1,5 @@
 <?php
+ob_start(); 
 session_start();
 require_once 'funciones.php';
 
@@ -9,23 +10,6 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
 }
 // Recuperar las variables de sesión
 $producto_id = $_SESSION["producto_id"] ?? '';
-?>
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8" />
-    <link rel="shortcut icon" type="image/x-icon" href="assets/img/beer-logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="assets/css/bootstrap.css" />
-    <link rel="stylesheet" href="assets/css/style.css" />
-    <link rel="stylesheet" href="assets/css/fontawesome.min.css" />
-    <!-- Hecho por Laura Valencia Díaz -->
-    <title>Cervecería - Laura Valencia</title>
-</head>
-
-<body>
-    <?php
     // Busca el producto con el ID elegido
     $sql = "SELECT * FROM productos WHERE ID_PRODUCTO = ?";
     $sentencia = mysqli_prepare($con, $sql);
@@ -56,7 +40,23 @@ $producto_id = $_SESSION["producto_id"] ?? '';
             }
         }
     }
+    ob_end_flush();
     ?>
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/beer-logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="assets/css/bootstrap.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/fontawesome.min.css" />
+    <!-- Hecho por Laura Valencia Díaz -->
+    <title>Cervecería - Laura Valencia</title>
+</head>
+
+<body>
     <?php include_once 'header.php' ?> <!-- el header -->
     <main>
         <section>

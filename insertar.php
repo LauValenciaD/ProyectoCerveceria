@@ -1,4 +1,5 @@
 <?php
+ob_start(); 
 session_start();
 require_once 'funciones.php';
 //si no está iniciada la sesión, te obliga a iniciar sesión
@@ -8,10 +9,116 @@ if (!isset($_SESSION['user'])) {
 }
 $user = $_SESSION['user'];
 if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inicio
-    alert("Debes ser root para estar en esta página.");
     header("Location: index.php");
     exit();
 }
+if (isset($_POST["submit"])) {
+    $denominacion = comprobarNombre($_POST["denominacion"]);
+    $marca = $_POST["marca"];
+    $fecha = $_POST["fecha"];
+    $precio = $_POST["precio"];
+    $observaciones = comprobarNombre($_POST["observaciones"]);
+
+    $errores = false;
+    $precioMal = false;
+    $mensaje = "";
+    $errorFoto = false;
+
+    // Validaciones
+    if (empty($denominacion)) {
+        $errores = true;
+    }
+
+    if (!isset($_POST["tipo"])) {
+        $errores = true;
+    } else {
+        $tipo = $_POST["tipo"]; // Aquí solo se asigna si está definido
+    }
+
+
+    if (!isset($_POST["alergenos"])) {
+        $errores = true;
+    }
+    if (isset($_POST['alergenos'])) {
+        // Verificamos si es un array
+        if (is_array($_POST['alergenos'])) {
+            $alergenos = $_POST['alergenos'];
+        } else {
+            // Si solo hay una opción seleccionada, convertirla en un array
+            $alergenos = $_POST['alergenos[]'];
+        }
+    }
+
+    if (empty($fecha)) {
+        $errores = true;
+    }
+
+    if (empty($precio) || !is_numeric($precio) || $precio <= 0) { //Si el precio no es numero o es menor o igual a 0 
+        $precioMal = true;
+        $errores = true;
+    }
+    if (isset($_FILES["foto"]) && $_FILES["foto"]["error"] === UPLOAD_ERR_OK) {
+        // Si se ha subido una foto correctamente
+        $rutaFoto = comprobarImg($mensaje); //funcion que comprueba los errores de la foto
+        if ($mensaje != "") { //la funcion devuelve un mensaje de error si lo hay
+            $errores = true;
+            $errorFoto = true;
+        }
+    } elseif (!isset($_FILES["foto"]) || $_FILES["foto"]["error"] !== UPLOAD_ERR_OK) {
+        // Si no se ha subido ninguna foto o hubo un error en la subida
+        $rutaFoto = "";
+    }
+
+
+    // Si no hay errores, guarda las variables en un sesion para insertar en el procesar.php
+    if (!$errores) {
+        $_SESSION["denominacion"] = $denominacion;
+        $_SESSION["marca"] = $marca;
+        $_SESSION["tipo"] = $tipo;
+        $_SESSION["formato"] = $_POST["formato"];
+        $_SESSION["cantidad"] = $_POST["cantidad"];
+        $_SESSION["alergenos"] = $alergenos;
+        $_SESSION["fecha"] = $fecha;
+        $_SESSION["precio"] = $precio;
+        $_SESSION["observaciones"] = $observaciones;
+        $_SESSION["rutaFoto"] = $rutaFoto;
+
+        header("Location: procesar.php");
+        exit;
+    }
+}
+//Funcion que comprueba la foto
+function comprobarImg(&$mensaje) { //pasa la variable por valor
+    // Verificar si hay errores en la subida del archivo
+    $errors = $_FILES['foto']['error'];
+    $mensaje = "";
+    if ($errors !== UPLOAD_ERR_OK) {
+        $mensaje = "<div class='text-danger'><strong> Hay un error en la imagen. </strong> El error es $errors .</div>";
+    } else { // Obtener información del archivo
+        $nombre = $_FILES['foto']['name'];
+        $tamanio = $_FILES['foto']['size'];
+        $tipo = $_FILES['foto']['type'];
+        $origen = $_FILES['foto']['tmp_name'];
+
+        if ($tamanio > 1000000) { // Verificar tamaño
+            $mensaje = "<div class='text-danger'>La imagen es demasiado grande. Máximo 1 MB.</div>";
+        }
+        if ($tipo !== "image/jpeg" && $tipo !== "image/png") { // Verificar tipo de archivo
+            $mensaje = "<div class='text-danger'>La imagen debe ser jpg o png. Tipo de archivo: $tipo </div>";
+        } else {
+
+            $destino = "archivos/" . $nombre;  // Ruta relativa a la carpeta "archivos"
+            // Mover el archivo a la ruta de destino
+            if (move_uploaded_file($origen, $destino)) {
+
+                return $destino; //devolvemos la ruta
+            } else {
+                $mensaje = "<div class='text-danger'>Error al mover el archivo a la carpeta de destino.</div>";
+            }
+        }
+    }
+}
+ob_end_flush();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -28,118 +135,6 @@ if ($user !== "root") { //si no ha iniciado sesion con root se redirije al inici
     </head>
 
     <body>
-        <?php
-
-        //VERIFICAR QUE EL NETBEANS TENGA LA URL DEL PROYECTO CORRECTA PARA QUE FUNCIONE Y QUE EL PUERTO DE LA BD ESTE BIEN
-      
-
-        if (isset($_POST["submit"])) {
-            $denominacion = comprobarNombre($_POST["denominacion"]);
-            $marca = $_POST["marca"];
-            $fecha = $_POST["fecha"];
-            $precio = $_POST["precio"];
-            $observaciones = comprobarNombre($_POST["observaciones"]);
-
-            $errores = false;
-            $precioMal = false;
-            $mensaje = "";
-            $errorFoto = false;
-
-            // Validaciones
-            if (empty($denominacion)) {
-                $errores = true;
-            }
-
-            if (!isset($_POST["tipo"])) {
-                $errores = true;
-            } else {
-                $tipo = $_POST["tipo"]; // Aquí solo se asigna si está definido
-            }
-
-
-            if (!isset($_POST["alergenos"])) {
-                $errores = true;
-            }
-            if (isset($_POST['alergenos'])) {
-                // Verificamos si es un array
-                if (is_array($_POST['alergenos'])) {
-                    $alergenos = $_POST['alergenos'];
-                } else {
-                    // Si solo hay una opción seleccionada, convertirla en un array
-                    $alergenos = $_POST['alergenos[]'];
-                }
-            }
-
-            if (empty($fecha)) {
-                $errores = true;
-            }
-
-            if (empty($precio) || !is_numeric($precio) || $precio <= 0) { //Si el precio no es numero o es menor o igual a 0 
-                $precioMal = true;
-                $errores = true;
-            }
-            if (isset($_FILES["foto"]) && $_FILES["foto"]["error"] === UPLOAD_ERR_OK) {
-                // Si se ha subido una foto correctamente
-                $rutaFoto = comprobarImg($mensaje); //funcion que comprueba los errores de la foto
-                if ($mensaje != "") { //la funcion devuelve un mensaje de error si lo hay
-                    $errores = true;
-                    $errorFoto = true;
-                }
-            } elseif (!isset($_FILES["foto"]) || $_FILES["foto"]["error"] !== UPLOAD_ERR_OK) {
-                // Si no se ha subido ninguna foto o hubo un error en la subida
-                $rutaFoto = "";
-            }
-
-
-            // Si no hay errores, guarda las variables en un sesion para insertar en el procesar.php
-            if (!$errores) {
-                $_SESSION["denominacion"] = $denominacion;
-                $_SESSION["marca"] = $marca;
-                $_SESSION["tipo"] = $tipo;
-                $_SESSION["formato"] = $_POST["formato"];
-                $_SESSION["cantidad"] = $_POST["cantidad"];
-                $_SESSION["alergenos"] = $alergenos;
-                $_SESSION["fecha"] = $fecha;
-                $_SESSION["precio"] = $precio;
-                $_SESSION["observaciones"] = $observaciones;
-                $_SESSION["rutaFoto"] = $rutaFoto;
-
-                header("Location: procesar.php");
-                exit;
-            }
-        }
-        //Funcion que comprueba la foto
-        function comprobarImg(&$mensaje) { //pasa la variable por valor
-            // Verificar si hay errores en la subida del archivo
-            $errors = $_FILES['foto']['error'];
-            $mensaje = "";
-            if ($errors !== UPLOAD_ERR_OK) {
-                $mensaje = "<div class='text-danger'><strong> Hay un error en la imagen. </strong> El error es $errors .</div>";
-            } else { // Obtener información del archivo
-                $nombre = $_FILES['foto']['name'];
-                $tamanio = $_FILES['foto']['size'];
-                $tipo = $_FILES['foto']['type'];
-                $origen = $_FILES['foto']['tmp_name'];
-
-                if ($tamanio > 1000000) { // Verificar tamaño
-                    $mensaje = "<div class='text-danger'>La imagen es demasiado grande. Máximo 1 MB.</div>";
-                }
-                if ($tipo !== "image/jpeg" && $tipo !== "image/png") { // Verificar tipo de archivo
-                    $mensaje = "<div class='text-danger'>La imagen debe ser jpg o png. Tipo de archivo: $tipo </div>";
-                } else {
-
-                    $destino = "archivos/" . $nombre;  // Ruta relativa a la carpeta "archivos"
-                    // Mover el archivo a la ruta de destino
-                    if (move_uploaded_file($origen, $destino)) {
-
-                        return $destino; //devolvemos la ruta
-                    } else {
-                        $mensaje = "<div class='text-danger'>Error al mover el archivo a la carpeta de destino.</div>";
-                    }
-                }
-            }
-        }
-        ?>
         <?php include_once 'header.php' ?> <!-- el header -->
         <main>
             <!--  formulario de insercion -->
