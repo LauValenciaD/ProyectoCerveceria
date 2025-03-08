@@ -1,21 +1,5 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8" />
-    <link rel="shortcut icon" type="image/x-icon" href="assets/img/beer-logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="assets/css/bootstrap.css" />
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Hecho por Laura Valencia Díaz -->
-    <title>Cervecería - Laura Valencia</title>
-</head>
-
-<body>
-    <?php
+<?php
+    session_start();
     require_once "conexion.php";
 
     //VERIFICAR QUE EL NETBEANS TENGA LA URL DEL PROYECTO CORRECTA PARA QUE FUNCIONE Y QUE EL PUERTO DE LA BD ESTE BIEN
@@ -47,7 +31,6 @@
         // Si no hay errores con los campos, inicia la conexión
         if (count($errores) == 0) {
             // Conexión a la base de datos
-            require_once "conexion.php";
             $sql = "SELECT * FROM usuario WHERE CORREO = ?"; // Busca al usuario
             $sentencia = mysqli_prepare($con, $sql);
             mysqli_stmt_bind_param($sentencia, "s", $user);
@@ -57,7 +40,6 @@
     
             if ($registrado) { // Si el usuario ya está registrado
                 if (password_verify($password, $registrado["PASSWORD"])) {
-                    session_start();
                     $_SESSION["user"] = $user; //Guardamos el correo
                     $_SESSION["usuario_id"] = $registrado["ID_USUARIO"]; //Guardamos el id para buscar el carrito luego
                     header("Location: catalogo.php");
@@ -73,6 +55,23 @@
         }
     }
     ?>
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/beer-logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="assets/css/bootstrap.css" />
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Hecho por Laura Valencia Díaz -->
+    <title>Cervecería - Laura Valencia</title>
+</head>
+
+<body>
     <header> <!<!-- header simple sin funciones hasta que no haga login -->
             <nav class="navbar navbar-expand-lg navbar-light shadow d-flex">
                 <!-- logo -->
