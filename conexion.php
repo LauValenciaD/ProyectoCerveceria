@@ -1,8 +1,6 @@
 <!-- Hecho por Laura Valencia Díaz -->
 <?php
 
-// Configurar para que mysqli lance excepciones en caso de error
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 // Datos para la conexión a MySQL usando variables de entorno
 define('DB_SERVER', getenv('DB_HOST'));  // Usar la variable de entorno de Render para el host
