@@ -1,11 +1,13 @@
 <!-- Hecho por Laura Valencia Díaz -->
 <?php
-ob_start(); 
-session_start();
-// Cierra la sesión y te lleva al inicio de sesión
-session_destroy();
-header("Location: index.php");
+ob_start();  // Inicia el buffer de salida
 
-ob_end_flush();
+session_start();  // Inicia la sesión
+session_unset();  // Elimina todas las variables de sesión
+session_destroy();  // Destruye la sesión
+
+header("Location: index.php");  // Redirige al inicio de sesión
+exit();  // Asegúrate de que el script se detenga aquí
+
+ob_end_flush();  // Finaliza el buffer de salida
 ?>
-
