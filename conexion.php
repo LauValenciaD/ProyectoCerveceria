@@ -8,8 +8,9 @@ define('DB_NAME', getenv('DB_NAME'));    // Usar la variable de entorno de Rende
 define('DB_USER', getenv('DB_USER'));    // Usar la variable de entorno de Render para el usuario
 define('DB_PASS', getenv('DB_PASS'));    // Usar la variable de entorno de Render para la contraseña
 
-// Ruta al certificado CA desde la variable de entorno
+// Ruta al certificado CA y puerto desde la variable de entorno
 define('SSL_CA', getenv('DB_SSL_CA'));   // Usar la variable de entorno de Render para el archivo de certificado CA
+define('DB_PORT', getenv('DB_PORT'));
 
 // Conexión usando mysqli con SSL
 $con = mysqli_init(); // Inicializar la conexión
@@ -21,7 +22,7 @@ $con = mysqli_init(); // Inicializar la conexión
         DB_USER,
         DB_PASS,
         DB_NAME,
-        getenv('DB_PORT'), // Usar el puerto desde la variable de entorno
+        DB_PORT, // Usar el puerto desde la variable de entorno
         null, // Usar null si no necesitas un socket específico
         MYSQLI_CLIENT_SSL // Indicar que la conexión será SSL
     );
