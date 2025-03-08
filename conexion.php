@@ -14,7 +14,6 @@ define('SSL_CA', getenv('DB_SSL_CA'));   // Usar la variable de entorno de Rende
 // Conexión usando mysqli con SSL
 $con = mysqli_init(); // Inicializar la conexión
 
-try {
     // Configuración de la conexión SSL
     mysqli_real_connect(
         $con,
@@ -32,14 +31,7 @@ try {
         mysqli_ssl_set($con, NULL, NULL, SSL_CA, NULL, NULL);
     }
 
-     if (!$con) {
-        throw new Exception("Error de conexión: " . mysqli_connect_error());
-    }
-
     
-} catch (mysqli_sql_exception $e) {
-    exit();
-}
 
 
 
