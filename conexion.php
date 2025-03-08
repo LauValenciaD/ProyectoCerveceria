@@ -1,6 +1,8 @@
 <!-- Hecho por Laura Valencia Díaz -->
 <?php
 
+// Configurar para que mysqli lance excepciones en caso de error
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 // Datos para la conexión a MySQL usando variables de entorno
 define('DB_SERVER', getenv('DB_HOST'));  // Usar la variable de entorno de Render para el host
@@ -14,26 +16,30 @@ define('SSL_CA', getenv('DB_SSL_CA'));   // Usar la variable de entorno de Rende
 // Conexión usando mysqli con SSL
 $con = mysqli_init(); // Inicializar la conexión
 
-// Configuración de la conexión SSL
-mysqli_real_connect(
-    $con,
-    DB_SERVER,
-    DB_USER,
-    DB_PASS,
-    DB_NAME,
-    null, // Puerto, si es necesario, ponlo aquí, sino déjalo como null
-    null, // Usar null si no necesitas un socket específico
-    MYSQLI_CLIENT_SSL // Indicar que la conexión será SSL
-);
+try {
+    // Configuración de la conexión SSL
+    mysqli_real_connect(
+        $con,
+        DB_SERVER,
+        DB_USER,
+        DB_PASS,
+        DB_NAME,
+        getenv('DB_PORT'), // Usar el puerto desde la variable de entorno
+        null, // Usar null si no necesitas un socket específico
+        MYSQLI_CLIENT_SSL // Indicar que la conexión será SSL
+    );
 
-// Verificar la conexión
-if (mysqli_connect_errno()) {
-    echo "Fallo al conectar a MySQL: " . mysqli_connect_error();
+    // Verificar si hay un certificado SSL configurado
+    if (defined('SSL_CA') && SSL_CA) {
+        mysqli_ssl_set($con, NULL, NULL, SSL_CA, NULL, NULL);
+    }
+
+    
+} catch (mysqli_sql_exception $e) {
+    // Captura el error y lo muestra
+    echo "Error al conectar a la base de datos: " . $e->getMessage();
     exit();
 }
-
-
-
 
 
 
