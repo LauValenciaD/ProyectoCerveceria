@@ -34,10 +34,12 @@ try {
         mysqli_ssl_set($con, NULL, NULL, SSL_CA, NULL, NULL);
     }
 
+     if (!$con) {
+        throw new Exception("Error de conexión: " . mysqli_connect_error());
+    }
+
     
 } catch (mysqli_sql_exception $e) {
-    // Captura el error y lo muestra
-    echo "Error al conectar a la base de datos: " . $e->getMessage();
     exit();
 }
 
