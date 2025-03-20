@@ -14,9 +14,20 @@ Este proyecto consiste en una tienda online de cervezas donde los usuarios puede
 - Base de datos: MySQL
 - Despliegue: Render, Aiven, Docker
 
-## Ver en funcionamiento
+## Capturas
 
-Puedes ver la tienda online desplegada en el siguiente enlace: [Ver la tienda online desplegada](https://cerveceria-online.onrender.com)
+### Usuario
+
+![Loging](/screenshots/4.JPG)
+![Catalogo](/screenshots/1.JPG)
+![Carrito](/screenshots/2.JPG)
+![Buscador](/screenshots/3.JPG)
+
+### Admin
+
+![Catalogo de admin](/screenshots/7.JPG)
+![Añadir cerveza](/screenshots/5.JPG)
+![Modificar cerveza](/screenshots/6.JPG)
 
 ## Funcionalidades
 
@@ -29,3 +40,4 @@ Puedes ver la tienda online desplegada en el siguiente enlace: [Ver la tienda on
 ## Despliegue
 
 El proyecto está desplegado en Render, lo que permite que esté accesible online con las funcionalidades mencionadas.
+Puedes ver la tienda online desplegada en el siguiente enlace: [Ver la tienda online desplegada](https://cerveceria-online.onrender.com)
